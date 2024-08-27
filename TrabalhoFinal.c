@@ -48,9 +48,7 @@ int main(){
                printf("Informação inválida. Tente novamente.\n"); 
             }
         }while(validar_nome(atleta[contador].nome) != 1);
-        
         // leitor de datas
-        
         do{
             printf("Digite sua data de nascimento (dd/mm/yyyy): ");
             scanf("%d/%d/%d", &atleta[contador].nascimento.dia, &atleta[contador].nascimento.mes, &atleta[contador].nascimento.ano);
@@ -60,10 +58,34 @@ int main(){
                printf("Informação inválida. Tente novamente.\n\n"); 
             }
         }while(validar_data(atleta[contador].nascimento) != 1);
+        //leitor de paúses
+        do{
+            printf("Digite seu país: ");
+            fgets(atleta[contador].pais, 35, stdin);
+            atleta[contador].pais[strlen(atleta[contador].pais) - 1] = '\0';
+            
+            if(validar_pais(atleta[contador].pais) == 0){
+               printf("Informação inválida. Tente novamente.\n"); 
+            }
+        }while(validar_pais(atleta[contador].pais) != 1);
     }
     
 }
-
+int validar_nome(char nome[]){
+    int i = 0;
+    
+    if(nome[0] == ' '){
+        return 0;
+    } else if(strlen(nome) <= 3){
+        return 0;
+    }
+    for(i = 0; i < strlen(nome); i++){
+        if(nome[i] >= '0' && nome[i] <= '9'){
+            return 0;
+        }
+    }
+    return 1;
+}
 int validar_data(Data nascimento){
     // variáveis
     int maxdias[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
@@ -83,19 +105,27 @@ int validar_data(Data nascimento){
     }
     return 1;   
 }
-
-int validar_nome(char nome[]){
+int validar_pais(char pais[]){
     int i = 0;
-    
-    if(nome[0] == ' '){
+    char paises_aceitos[6][35] = {"Brasil", "EUA", "Inglaterra", "Jamaica", "Arabia Saudita", "Estados Unidos"};
+    if(pais[0] == ' '){
         return 0;
-    } else if(strlen(nome) <= 3){
+    } else if(strlen(pais) <= 2){
         return 0;
     }
-    for(i = 0; i < strlen(nome); i++){
-        if(nome[i] >= '0' && nome[i] <= '9'){
+    for(i = 0; i < strlen(pais); i++){
+        if(pais[i] >= '0' && pais[i] <= '9'){
             return 0;
         }
     }
-    return 1;
+    
+    for(i = 0; i < 6; i++){
+        if(strcasecmp(pais, paises_aceitos[i]) == 0){
+            if(strcasecmp(pais, "Estados Unidos") == 0){
+                strcpy(pais, "EUA"); 
+            }
+            return 1;
+        }
+    }
+    return 0;
 }
