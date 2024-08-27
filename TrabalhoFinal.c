@@ -31,53 +31,23 @@ typedef struct treinamento{
 int validar_data(Data nascimento);
 int validar_nome(char nome[]);
 int validar_pais(char pais[]);
+void cadastro(void);
 
 int contador = 0;
 
-int main(){
-    Atleta atleta[20];
-    Data nascimento;
+int main()
+{
+    cadastro();
     
-    for(contador = 0; contador < 20; contador++){
-        // leitor de nomes
-        do{
-            printf("Digite seu nome: ");
-            fgets(atleta[contador].nome, 50, stdin);
-            atleta[contador].nome[strlen(atleta[contador].nome) - 1] = '\0';
-            
-            if(validar_nome(atleta[contador].nome) == 0){
-               printf("Informação inválida. Tente novamente.\n"); 
-            }
-        }while(validar_nome(atleta[contador].nome) != 1);
-        // leitor de datas
-        do{
-            printf("Digite sua data de nascimento (dd/mm/yyyy): ");
-            scanf("%d/%d/%d", &atleta[contador].nascimento.dia, &atleta[contador].nascimento.mes, &atleta[contador].nascimento.ano);
-            getchar(); // tira o \n do scanf
-            
-            if(validar_data(atleta[contador].nascimento) == 0){
-               printf("Informação inválida. Tente novamente.\n\n"); 
-            }
-        }while(validar_data(atleta[contador].nascimento) != 1);
-        //leitor de paúses
-        do{
-            printf("Digite seu país: ");
-            fgets(atleta[contador].pais, 35, stdin);
-            atleta[contador].pais[strlen(atleta[contador].pais) - 1] = '\0';
-            
-            if(validar_pais(atleta[contador].pais) == 0){
-               printf("Informação inválida. Tente novamente.\n"); 
-            }
-        }while(validar_pais(atleta[contador].pais) != 1);
-    }
-    
+    return 0;
 }
+
 int validar_nome(char nome[]){
     int i = 0;
     
     if(nome[0] == ' '){
         return 0;
-    } else if(strlen(nome) <= 2){
+    } else if(strlen(nome) <= 3){
         return 0;
     }
     for(i = 0; i < strlen(nome); i++){
@@ -128,5 +98,46 @@ int validar_pais(char pais[]){
             return 1;
         }
     }
-    return 0;
+}
+    
+void cadastro(){
+    Atleta atleta[20];
+    Data nascimento;
+    
+    for(contador = 0; contador < 20; contador++){
+        printf("cadastro do atleta número %d:\n", (contador + 1));
+        
+        // leitor de nomes
+        do{
+            printf("Digite seu nome: ");
+            fgets(atleta[contador].nome, 50, stdin);
+            atleta[contador].nome[strlen(atleta[contador].nome) - 1] = '\0';
+            
+            if(validar_nome(atleta[contador].nome) == 0){
+               printf("Informação inválida. Tente novamente.\n"); 
+            }
+        }while(validar_nome(atleta[contador].nome) != 1);
+        
+        // leitor de datas
+        do{
+            printf("Digite sua data de nascimento (dd/mm/yyyy): ");
+            scanf("%d/%d/%d", &atleta[contador].nascimento.dia, &atleta[contador].nascimento.mes, &atleta[contador].nascimento.ano);
+            getchar(); // tira o \n do scanf
+            
+            if(validar_data(atleta[contador].nascimento) == 0){
+               printf("Informação inválida. Tente novamente.\n\n"); 
+            }
+        }while(validar_data(atleta[contador].nascimento) != 1);
+        
+        // leitor de países
+        do{
+            printf("Digite seu país: ");
+            fgets(atleta[contador].pais, 35, stdin);
+            atleta[contador].pais[strlen(atleta[contador].pais) - 1] = '\0';
+            
+            if(validar_pais(atleta[contador].pais) == 0){
+               printf("Informação inválida. Tente novamente.\n"); 
+            }
+        }while(validar_pais(atleta[contador].pais) != 1);
+    }
 }
