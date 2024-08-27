@@ -68,7 +68,6 @@ Dica 2: ???.
 Plágio é crime! 
 Se detectado, acarretará nota 0 (ZERO) para todos os envolvidos. Melhor entregar um código incompleto do que algo plagiado - faça você o seu código.
 
-
 Obs: 
 Trabalho em grupo mas a nota é individual.
 Proibido qualquer tipo de gerador automático de código.
