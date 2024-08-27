@@ -30,6 +30,7 @@ typedef struct treinamento{
 
 int validar_data(Data nascimento);
 int validar_nome(char nome[]);
+int validar_pais(char pais[]);
 
 int contador = 0;
 
@@ -76,7 +77,7 @@ int validar_nome(char nome[]){
     
     if(nome[0] == ' '){
         return 0;
-    } else if(strlen(nome) <= 3){
+    } else if(strlen(nome) <= 2){
         return 0;
     }
     for(i = 0; i < strlen(nome); i++){
