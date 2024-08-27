@@ -37,11 +37,16 @@ int main(){
     Atleta atleta[20];
     
     for(contador = 0; contador < 20; contador++){
-        while(validar_nome(atleta[contador].nome) != 0){
+        do{
             fgets(atleta[contador].nome, 50, stdin);
             atleta[contador].nome[strlen(atleta[contador].nome) - 1] = '\0';
-        }
+            
+            if(validar_nome(atleta[contador].nome) == 0){
+               printf("Informação inválida. Tente novamente.\n"); 
+            }
+        }while(validar_nome(atleta[contador].nome) != 1);
     }
+    
 }
 
 int validar_nome(char nome[]){
