@@ -37,6 +37,7 @@ void cadastro();
 void treinamento();
 
 int contador = 0;
+Atleta atleta[100];
 
 int main(){
 
@@ -47,13 +48,15 @@ int main(){
 
 void menu(){
     int escolha = 0;
-    
-    printf("***********************\n");
-    printf("  1. Cadastrar Atleta\n");
-    printf("  2. Treinamento\n");
-    printf("  3. Corrida\n");
-    printf("***********************\n\n");
-    printf("Escolha dentre as opções acima: ");
+    printf("    _________________________________\n");
+    printf("    |*******************************|\n");
+    printf("    |Sistema Gerenciador de Corridas|\n");
+    printf("    |*******************************|\n");
+    printf("    |    1. Cadastrar Atleta        |\n");   
+    printf("    |    2. Treinamento             |\n");
+    printf("    |    3. Corrida                 |\n");
+    printf("    |*******************************|\n\n");
+    printf("    Escolha dentre as opções: ");
     
     while(1){
         scanf("%d", &escolha);
@@ -64,6 +67,7 @@ void menu(){
                 cadastro();
                 break;
             case 2:
+                treinamento();
                 break;
             case 3:
                 break;
@@ -72,19 +76,16 @@ void menu(){
                 printf("Escolha dentre as opções acima: ");
         }  
     }
-    
 }
 
 void cadastro(){
-    Atleta atleta[20];
-    Data nascimento;
     int qtd_cadastro = 0;
     
     printf("\nDigite quantos cadastros gostaria de fazer: ");
     scanf("%d", &qtd_cadastro);
     getchar();
     
-    for(contador = 0; contador < qtd_cadastro; contador++){
+    for(; contador < qtd_cadastro; contador++){
         printf("\nCadastro do atleta número %d: ", (contador + 1));
         // leitor de nomes
         do{
@@ -96,7 +97,6 @@ void cadastro(){
                printf("Informação inválida. Tente novamente."); 
             }
         }while(validar_nome(atleta[contador].nome) != 1);
-        
         // leitor de datas
         do{
             printf("Digite a data de nascimento (dd/mm/yyyy): ");
@@ -107,7 +107,6 @@ void cadastro(){
                printf("Informação inválida. Tente novamente.\n\n"); 
             }
         }while(validar_data(atleta[contador].nascimento) != 1);
-        
         // leitor de países
         do{
             printf("Digite o país: ");
@@ -120,8 +119,39 @@ void cadastro(){
         }while(validar_pais(atleta[contador].pais) != 1);
     }
     
-    printf("Cadastro(s) finalizado(s)\n\n");
+    printf("\nCadastro(s) finalizado(s)\n\n");
     menu();
+}
+void treinamento(){
+    Treinamento treino[50];
+    int i = 0;
+    int j = 0;
+    char escolha;
+    
+    for(i = 0; i < contador; i++){
+        strcpy(treino[i].atleta.nome, atleta[i].nome);
+    }
+    while(escolha != 'S'){
+        for(i = 0; i < contador; i++){
+            printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
+        }
+ 
+        printf("\nConfimar? S/N \n");
+        scanf("%c", &escolha);
+    }
+    printf("\nConfimado\n");
+    
+    for(i = 0; i < contador; i++){
+        printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
+        for(j = 0; j < 7; j++){
+            treino[i].tempo[j] = rand() % 20;
+        }
+        for(j = 0; j < 7; j++){
+            printf("| %ds ", treino[i].tempo[j]);
+        }
+        printf("|");
+    }
+    
 }
 int validar_nome(char nome[]){
     int i = 0;
