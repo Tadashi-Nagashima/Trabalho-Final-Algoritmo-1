@@ -36,7 +36,9 @@ void menu();
 void cadastro();
 void treinamento();
 
-int contador = 0;
+void preencher_atletas ();
+
+int contador = 12; // Se for usar a função preencher_atletas() alterar a variável para o número de atletas
 Atleta atleta[100];
 
 int main(){
@@ -64,7 +66,8 @@ void menu(){
         
         switch(escolha){
             case 1:
-                cadastro();
+                //cadastro();
+                preencher_atletas(); // Se for usar a função preencher_atletas() alterar a variável int contador para o número de atletas e quais atletas usar na função no final do programa
                 break;
             case 2:
                 treinamento();
@@ -126,7 +129,11 @@ void treinamento(){
     Treinamento treino[50];
     int i = 0;
     int j = 0;
+    int temp = 0;
+    int temp_atleta = 0;
     char escolha;
+    int melhores[8] = {100, 100, 100, 100, 100, 100, 100, 100};
+    int melhores_atletas[8];
     
     for(i = 0; i < contador; i++){
         strcpy(treino[i].atleta.nome, atleta[i].nome);
@@ -135,7 +142,7 @@ void treinamento(){
         for(i = 0; i < contador; i++){
             printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
         }
- 
+
         printf("\nConfimar? S/N \n");
         scanf("%c", &escolha);
     }
@@ -149,7 +156,34 @@ void treinamento(){
         for(j = 0; j < 7; j++){
             printf("| %ds ", treino[i].tempo[j]);
         }
-        printf("|");
+        printf("|\n\n");
+    }
+    
+    for (i = 0; i < contador; i++) {
+        for (j = 0; j < 7; j++) {
+            if (treino[i].tempo[j] < melhores[i]) {
+                melhores[i] = treino[i].tempo[j];
+                melhores_atletas[i] = i;
+            }
+        }
+    }
+    
+    for (i = 0; i < 8; i++) {
+        for (j = i + 1; j < 8; j++) {
+            if (melhores[i] > melhores[j]) {
+                temp = melhores[i];
+                melhores[i] = melhores[j];
+                melhores[j] = temp;
+
+                temp_atleta = melhores_atletas[i];
+                melhores_atletas[i] = melhores_atletas[j];
+                melhores_atletas[j] = temp_atleta;
+            }
+        }
+    }
+    
+    for(i = 0; i < 8; i++){
+        printf("%s: %ds\n", treino[melhores_atletas[i]].atleta.nome, melhores[i]);
     }
     
 }
@@ -210,4 +244,113 @@ int validar_pais(char pais[]){
         }
     }
     return 0;
+}
+void preencher_atletas(){
+    strcpy(atleta[0].nome, "Ana dos Santos");
+    strcpy(atleta[0].pais, "Brasil");
+    atleta[0].sexo = 'F';
+    atleta[0].nascimento.dia = 21;
+    atleta[0].nascimento.dia = 12;
+    atleta[0].nascimento.dia = 1979;
+    
+    strcpy(atleta[1].nome, "John New");
+    strcpy(atleta[1].pais, "EUA");
+    atleta[1].sexo = 'M';
+    atleta[1].nascimento.dia = 15;
+    atleta[1].nascimento.dia = 2;
+    atleta[1].nascimento.dia = 1959;
+    
+    strcpy(atleta[2].nome, "Helena Silveira");
+    strcpy(atleta[2].pais, "Brasil");
+    atleta[2].sexo = 'F';
+    atleta[2].nascimento.dia = 10;
+    atleta[2].nascimento.dia = 2;
+    atleta[2].nascimento.dia = 1979;
+    
+    strcpy(atleta[3].nome, "Esther J. Sechrist");
+    strcpy(atleta[3].pais, "EUA");
+    atleta[3].sexo = 'F';
+    atleta[3].nascimento.dia = 2;
+    atleta[3].nascimento.dia = 7;
+    atleta[3].nascimento.dia = 1970;
+    
+    strcpy(atleta[4].nome, "Keith V. Prentiss");
+    strcpy(atleta[4].pais, "EUA");
+    atleta[4].sexo = 'F';
+    atleta[4].nascimento.dia = 21;
+    atleta[4].nascimento.dia = 12;
+    atleta[4].nascimento.dia = 1974;
+    
+    strcpy(atleta[5].nome, "John S. McKinnon");
+    strcpy(atleta[5].pais, "EUA");
+    atleta[5].sexo = 'M';
+    atleta[5].nascimento.dia = 16;
+    atleta[5].nascimento.dia = 12;
+    atleta[5].nascimento.dia = 1967;
+    
+    strcpy(atleta[6].nome, "Alisha Marsh");
+    strcpy(atleta[6].pais, "Inglaterra");
+    atleta[6].sexo = 'M';
+    atleta[6].nascimento.dia = 21;
+    atleta[6].nascimento.dia = 2;
+    atleta[6].nascimento.dia = 1962;
+    
+    strcpy(atleta[7].nome, "Callum Hall");
+    strcpy(atleta[7].pais, "Inglaterra");
+    atleta[7].sexo = 'M';
+    atleta[7].nascimento.dia = 8;
+    atleta[7].nascimento.dia = 4;
+    atleta[7].nascimento.dia = 1957;
+    
+    strcpy(atleta[8].nome, "Niamh Archer");
+    strcpy(atleta[8].pais, "Inglaterra");
+    atleta[8].sexo = 'F';
+    atleta[8].nascimento.dia = 1;
+    atleta[8].nascimento.dia = 1;
+    atleta[8].nascimento.dia = 1979;
+    
+    strcpy(atleta[9].nome, "Abdul Baasid al-Sadri");
+    strcpy(atleta[9].pais, "Arabia Saudita");
+    atleta[9].sexo = 'M';
+    atleta[9].nascimento.dia = 17;
+    atleta[9].nascimento.dia = 3;
+    atleta[9].nascimento.dia = 1969;
+    
+    strcpy(atleta[10].nome, "Kaatima el-Nasser");
+    strcpy(atleta[10].pais, "Arabia Sauditat");
+    atleta[10].sexo = 'F';
+    atleta[10].nascimento.dia = 25;
+    atleta[10].nascimento.dia = 8;
+    atleta[10].nascimento.dia = 1970;
+    
+    strcpy(atleta[11].nome, "Sharonda Powell ");
+    strcpy(atleta[11].pais, "Jamaica");
+    atleta[11].sexo = 'F';
+    atleta[11].nascimento.dia = 8;
+    atleta[11].nascimento.dia = 8;
+    atleta[11].nascimento.dia = 1978;
+    /*
+    strcpy(atleta[12].nome, "João Silva");
+    strcpy(atleta[12].pais, "Brasil");
+    atleta[12].sexo = 'M';
+    atleta[12].nascimento.dia = 2;
+    atleta[12].nascimento.dia = 1;
+    atleta[12].nascimento.dia = 1979;
+    
+    strcpy(atleta[13].nome, "Usain Bolt");
+    strcpy(atleta[13].pais, "Jamaica");
+    atleta[13].sexo = 'M';
+    atleta[13].nascimento.dia = 1;
+    atleta[13].nascimento.dia = 10;
+    atleta[13].nascimento.dia = 1963;
+    
+    strcpy(atleta[14].nome, "Haibaa el-Fayad");
+    strcpy(atleta[14].pais, "Arabia Sauditat");
+    atleta[14].sexo = 'F';
+    atleta[14].nascimento.dia = 3;
+    atleta[14].nascimento.dia = 6;
+    atleta[14].nascimento.dia = 1965;
+    */
+    printf("\nCadastro(s) finalizado(s)\n\n");
+    menu();
 }
