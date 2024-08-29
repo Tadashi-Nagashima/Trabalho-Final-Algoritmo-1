@@ -117,6 +117,10 @@ void cadastro(){
             if(validar_data(atleta[contador].nascimento) == 0){
                printf("Informação inválida. Tente novamente.\n\n"); 
             }
+            if(validar_data(atleta[contador].nascimento) == 2){
+                printf("O atleta possuí menos de 45 anos\n");
+                printf("Informação inválida. Tente novamente.\n\n");
+            }
         }while(validar_data(atleta[contador].nascimento) != 1);
         // leitor de sexo
         do{
@@ -243,6 +247,9 @@ int validar_data(Data nascimento){
     }
     if (nascimento.dia < 1 || nascimento.dia > maxdias[nascimento.mes - 1]){
         return 0;
+    }
+    if(nascimento.ano >= 1979 && nascimento.mes > 7){
+        return 2;
     }
     return 1;   
 }
