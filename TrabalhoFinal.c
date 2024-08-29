@@ -12,6 +12,11 @@ A estrutura de dados será baseada em registros (structs) e vetores/matrizes.
 #include <stdlib.h>
 #include <limits.h>
 
+#define MAXPAISES 6
+#define MAXNOME 50
+#define MAXTREINO 7
+#define MAXMELHORES 8
+
 typedef struct data{
     int dia;
     int mes;
@@ -19,7 +24,7 @@ typedef struct data{
 } Data;
 
 typedef struct atleta{
-    char nome[50];
+    char nome[MAXNOME];
     char pais[35];
     char sexo;
     Data nascimento;
@@ -27,13 +32,13 @@ typedef struct atleta{
 
 typedef struct competidor{
     Atleta atleta;
-    int tempo[7];
+    int tempo[MAXTREINO];
 } Competidor;
 
 typedef struct competicao{
-    char nome[50];
+    char nome[MAXNOME];
     Data data;
-    Competidor corredores[8];
+    Competidor corredores[MAXMELHORES];
 } Competicao;
 
 int validar_data(Data nascimento);
@@ -139,7 +144,7 @@ void cadastro(){
         // leitor de nomes
         do{
             printf("\nDigite o nome: ");
-            fgets(atleta[contador].nome, 50, stdin);
+            fgets(atleta[contador].nome, MAXNOME, stdin);
             atleta[contador].nome[strlen(atleta[contador].nome) - 1] = '\0';
             
             if(validar_nome(atleta[contador].nome) == 0){
@@ -212,7 +217,7 @@ void treinamento(){
     
     for(i = 0; i < contador; i++){
         printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
-        for(j = 0; j < 7; j++){
+        for(j = 0; j < MAXTREINO; j++){
             treino[i].tempo[j] = rand() % 101;
             printf("| %ds ", treino[i].tempo[j]);
         }
@@ -221,7 +226,7 @@ void treinamento(){
     
     for (i = 0; i < contador; i++){
         melhores[i] = INT_MAX;
-        for (j = 0; j < 7; j++){
+        for (j = 0; j < MAXTREINO; j++){
             if (treino[i].tempo[j] < melhores[i]){
                 melhores[i] = treino[i].tempo[j];
                 
@@ -245,7 +250,7 @@ void treinamento(){
     }
     
     printf("\nMelhores Tempos:\n");
-    for(i = 0; i < 8; i++){
+    for(i = 0; i < MAXMELHORES; i++){
         printf("%s: %ds\n", treino[melhores_atletas[i]].atleta.nome, melhores[i]);
     }
     
@@ -296,7 +301,7 @@ int validar_data(Data nascimento){
 }
 int validar_pais(char pais[]){
     int i = 0;
-    char paises_aceitos[6][35] = {"Brasil", "EUA", "Inglaterra", "Jamaica", "Arabia Saudita", "Estados Unidos"};
+    char paises_aceitos[MAXPAISES][35] = {"Brasil", "EUA", "Inglaterra", "Jamaica", "Arabia Saudita", "Estados Unidos"};
     if(pais[0] == ' '){
         return 0;
     } else if(strlen(pais) <= 2){
@@ -308,7 +313,7 @@ int validar_pais(char pais[]){
         }
     }
     
-    for(i = 0; i < 6; i++){
+    for(i = 0; i < MAXPAISES; i++){
         if(strcasecmp(pais, paises_aceitos[i]) == 0){
             if(strcasecmp(pais, "Estados Unidos") == 0){
                 strcpy(pais, "EUA"); 
@@ -324,7 +329,7 @@ void cadastrar_competicao(){
     printf("\n\nCadastrar Competição:\n\n");
     
     printf("Nome da Competição: ");
-    fgets(competicao.nome, 50, stdin);
+    fgets(competicao.nome, MAXNOME, stdin);
     competicao.nome[strlen(competicao.nome) - 1] = '\0';
     
     printf("Data da Competição: ");
