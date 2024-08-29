@@ -1,6 +1,7 @@
 /*
 Nomes: Luiz Felipe Costa Camargo e Tadashi Bello Nagashima
 Turma: EC41A - Algoritmos 1 - C11
+Data: 
 Enunciado: Desenvolver um programa em Linguagem C (ANSI C) para gerenciar e analisar dados relacionados ao Circuito Mundial de Corrida de Carrinho de Rolemã Senior. 
 O sistema deve organizar e validar informações sobre atletas, treinamento/classificação, competições e resultados finais das provas.
 A estrutura de dados será baseada em registros (structs) e vetores/matrizes.
@@ -23,22 +24,24 @@ typedef struct atleta{
     Data nascimento;
 } Atleta;
 
-typedef struct treinamento{
+typedef struct competidor{
     Atleta atleta;
     int tempo[7];
-} Treinamento;
+} Competidor;
 
 int validar_data(Data nascimento);
 int validar_nome(char nome[]);
+int validar_sexo(char sexo);
 int validar_pais(char pais[]);
 
-void menu();
+int menu();
 void cadastro();
 void treinamento();
+void corrida();
 
-void preencher_atletas ();
+void preencher_atletas (); //função temporária
 
-int contador = 12; // Se for usar a função preencher_atletas() alterar a variável para o número de atletas
+int contador = 0; // Se for usar a função preencher_atletas() alterar a variável para o número de atletas
 Atleta atleta[100];
 
 int main(){
@@ -48,7 +51,7 @@ int main(){
     return 0;
 }
 
-void menu(){
+int menu(){
     int escolha = 0;
     printf("    _________________________________\n");
     printf("    |*******************************|\n");
@@ -57,6 +60,7 @@ void menu(){
     printf("    |    1. Cadastrar Atleta        |\n");   
     printf("    |    2. Treinamento             |\n");
     printf("    |    3. Corrida                 |\n");
+    printf("    |    4. Encerrar programa       |\n");
     printf("    |*******************************|\n\n");
     printf("    Escolha dentre as opções: ");
     
@@ -73,6 +77,10 @@ void menu(){
                 treinamento();
                 break;
             case 3:
+                break;
+            case 4:
+                printf("\n    Encerrando...\n");
+                return 0;
                 break;
             default:
                 printf("Opção inválida. Tente novamente.\n");
@@ -110,6 +118,16 @@ void cadastro(){
                printf("Informação inválida. Tente novamente.\n\n"); 
             }
         }while(validar_data(atleta[contador].nascimento) != 1);
+        // leitor de sexo
+        do{
+            printf("Digite o sexo: ");
+            scanf("%c", &atleta[contador].sexo);
+            getchar(); // tira o \n do scanf
+            
+            if(validar_sexo(atleta[contador].sexo) == 0){
+               printf("Informação inválida. Tente novamente.\n\n"); 
+            }
+        }while(validar_sexo(atleta[contador].sexo) != 1);
         // leitor de países
         do{
             printf("Digite o país: ");
@@ -126,7 +144,7 @@ void cadastro(){
     menu();
 }
 void treinamento(){
-    Treinamento treino[50];
+    Competidor treino[50];
     int i = 0;
     int j = 0;
     int temp = 0;
@@ -145,6 +163,7 @@ void treinamento(){
 
         printf("\nConfimar? S/N \n");
         scanf("%c", &escolha);
+        getchar();
     }
     printf("\nConfimado\n");
     
@@ -152,8 +171,6 @@ void treinamento(){
         printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
         for(j = 0; j < 7; j++){
             treino[i].tempo[j] = rand() % 20;
-        }
-        for(j = 0; j < 7; j++){
             printf("| %ds ", treino[i].tempo[j]);
         }
         printf("|\n\n");
@@ -182,6 +199,7 @@ void treinamento(){
         }
     }
     
+    printf("\nMelhores Tempos:\n");
     for(i = 0; i < 8; i++){
         printf("%s: %ds\n", treino[melhores_atletas[i]].atleta.nome, melhores[i]);
     }
@@ -201,6 +219,13 @@ int validar_nome(char nome[]){
         }
     }
     return 1;
+}
+int validar_sexo(char sexo){
+    if(sexo != 'M' && sexo != 'F'){
+        return 0;    
+    } else{
+        return 1;
+    }
 }
 int validar_data(Data nascimento){
     // variáveis
@@ -329,7 +354,7 @@ void preencher_atletas(){
     atleta[11].nascimento.dia = 8;
     atleta[11].nascimento.dia = 8;
     atleta[11].nascimento.dia = 1978;
-    /*
+    
     strcpy(atleta[12].nome, "João Silva");
     strcpy(atleta[12].pais, "Brasil");
     atleta[12].sexo = 'M';
@@ -350,7 +375,9 @@ void preencher_atletas(){
     atleta[14].nascimento.dia = 3;
     atleta[14].nascimento.dia = 6;
     atleta[14].nascimento.dia = 1965;
-    */
+    
+    contador = 15;
+    
     printf("\nCadastro(s) finalizado(s)\n\n");
     menu();
 }
