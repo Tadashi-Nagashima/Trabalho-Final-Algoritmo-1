@@ -10,6 +10,7 @@ A estrutura de dados será baseada em registros (structs) e vetores/matrizes.
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 
 typedef struct data{
     int dia;
@@ -29,15 +30,22 @@ typedef struct competidor{
     int tempo[7];
 } Competidor;
 
+typedef struct competicao{
+    char nome[50];
+    Data data;
+    Competidor corredores[8];
+} Competicao;
+
 int validar_data(Data nascimento);
 int validar_nome(char nome[]);
 int validar_sexo(char sexo);
 int validar_pais(char pais[]);
 
 int menu();
+void menu_competicao();
 void cadastro();
 void treinamento();
-void corrida();
+void cadastrar_competicao();
 
 void preencher_atletas (); //função temporária
 
@@ -45,7 +53,6 @@ int contador = 0; // Se for usar a função preencher_atletas() alterar a variá
 Atleta atleta[100];
 
 int main(){
-
     menu();
     
     return 0;
@@ -58,9 +65,8 @@ int menu(){
     printf("    |Sistema Gerenciador de Corridas|\n");
     printf("    |*******************************|\n");
     printf("    |    1. Cadastrar Atleta        |\n");   
-    printf("    |    2. Treinamento             |\n");
-    printf("    |    3. Corrida                 |\n");
-    printf("    |    4. Encerrar programa       |\n");
+    printf("    |    2. Competição              |\n");
+    printf("    |    3. Encerrar programa       |\n");
     printf("    |*******************************|\n\n");
     printf("    Escolha dentre as opções: ");
     
@@ -70,15 +76,13 @@ int menu(){
         
         switch(escolha){
             case 1:
-                //cadastro();
-                preencher_atletas(); // Se for usar a função preencher_atletas() alterar a variável int contador para o número de atletas e quais atletas usar na função no final do programa
+                cadastro();
+                //preencher_atletas(); // Se for usar a função preencher_atletas() alterar a variável int contador para o número de atletas e quais atletas usar na função no final do programa
                 break;
             case 2:
-                treinamento();
+                menu_competicao();
                 break;
             case 3:
-                break;
-            case 4:
                 printf("\n    Encerrando...\n");
                 return 0;
                 break;
@@ -88,7 +92,41 @@ int menu(){
         }  
     }
 }
-
+void menu_competicao(){
+    int escolha = 0;
+    printf("    _________________________________\n");
+    printf("    |*******************************|\n");
+    printf("    |     Gerenciar Competição      |\n");
+    printf("    |*******************************|\n");
+    printf("    |    1. Cadastrar Competição    |\n");   
+    printf("    |    2. Treinamento             |\n");
+    printf("    |    3. Iniciar Competição      |\n");
+    printf("    |    4. Voltar                  |\n");
+    printf("    |*******************************|\n\n");
+    printf("    Escolha dentre as opções: ");
+    
+    while(1){
+        scanf("%d", &escolha);
+        getchar();
+        
+        switch(escolha){
+            case 1:
+                cadastrar_competicao();
+                break;
+            case 2:
+                treinamento();
+                break;
+            case 3:
+                break;
+            case 4:
+                menu();
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+                printf("Escolha dentre as opções acima: ");
+        }  
+    }
+}
 void cadastro(){
     int qtd_cadastro = 0;
     
@@ -154,9 +192,10 @@ void treinamento(){
     int temp = 0;
     int temp_atleta = 0;
     char escolha;
-    int melhores[8] = {100, 100, 100, 100, 100, 100, 100, 100};
-    int melhores_atletas[8];
+    int melhores[contador];
+    int melhores_atletas[contador];
     
+    printf("\nFase de Treinamento:\n\n");
     for(i = 0; i < contador; i++){
         strcpy(treino[i].atleta.nome, atleta[i].nome);
     }
@@ -174,24 +213,26 @@ void treinamento(){
     for(i = 0; i < contador; i++){
         printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
         for(j = 0; j < 7; j++){
-            treino[i].tempo[j] = rand() % 20;
+            treino[i].tempo[j] = rand() % 101;
             printf("| %ds ", treino[i].tempo[j]);
         }
         printf("|\n\n");
     }
     
-    for (i = 0; i < contador; i++) {
-        for (j = 0; j < 7; j++) {
-            if (treino[i].tempo[j] < melhores[i]) {
+    for (i = 0; i < contador; i++){
+        melhores[i] = INT_MAX;
+        for (j = 0; j < 7; j++){
+            if (treino[i].tempo[j] < melhores[i]){
                 melhores[i] = treino[i].tempo[j];
-                melhores_atletas[i] = i;
+                
             }
         }
+        melhores_atletas[i] = i;
     }
     
-    for (i = 0; i < 8; i++) {
-        for (j = i + 1; j < 8; j++) {
-            if (melhores[i] > melhores[j]) {
+    for (i = 0; i < contador; i++){
+        for (j = i + 1; j < contador; j++){
+            if (melhores[i] > melhores[j]){
                 temp = melhores[i];
                 melhores[i] = melhores[j];
                 melhores[j] = temp;
@@ -276,6 +317,21 @@ int validar_pais(char pais[]){
         }
     }
     return 0;
+}
+void cadastrar_competicao(){
+    Competicao competicao;
+    
+    printf("\n\nCadastrar Competição:\n\n");
+    
+    printf("Nome da Competição: ");
+    fgets(competicao.nome, 50, stdin);
+    competicao.nome[strlen(competicao.nome) - 1] = '\0';
+    
+    printf("Data da Competição: ");
+    scanf("%d/%d/%d", &competicao.data.dia, &competicao.data.mes, &competicao.data.ano);
+    
+    
+    
 }
 void preencher_atletas(){
     strcpy(atleta[0].nome, "Ana dos Santos");
