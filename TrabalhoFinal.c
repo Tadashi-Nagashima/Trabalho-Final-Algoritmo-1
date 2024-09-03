@@ -47,6 +47,7 @@ int validar_sexo(char sexo);
 int validar_pais(char pais[]);
 
 int menu();
+int precadastro();
 void menu_competicao(Atleta a1[], int qtd);
 void cadastro(Atleta a1[], int qtd);
 void iniciar_competicao(Competidor compet[], int qtd);
@@ -54,9 +55,9 @@ void iniciar_competicao(Competidor compet[], int qtd);
 void treinamento(Atleta a1[], int qtd);
 Competicao cadastrar_competicao(Atleta a1[], int qtd);
 
-void preencher_atletas(Atleta a1[], int qtd); //função temporária
+void preencher_atletas(Atleta atleta[], int qtd_cadastro); //função temporária
 
-int contador = 15; // Se for usar a função preencher_atletas() alterar a variável para o número de atletas
+int contador = 0;
 int melhores[15];
 int melhores_atletas[15];
 Atleta atleta[100];
@@ -88,8 +89,7 @@ int menu(){
         
         switch(escolha){
             case 1:
-                //cadastro(atleta, contador);
-                preencher_atletas(atleta, contador); // Se for usar a função preencher_atletas() alterar a variável int contador para o número de atletas e quais atletas usar na função no final do programa
+                precadastro();
                 break;
             case 2:
                 menu_competicao(atleta, contador);
@@ -143,12 +143,40 @@ void menu_competicao(Atleta a1[], int qtd){
         }  
     }
 }
-void cadastro(Atleta a1[], int qtd){
+int precadastro(){
     int qtd_cadastro = 0;
-    
+    char escolha;
+
     printf("\nDigite quantos cadastros gostaria de fazer: ");
     scanf("%d", &qtd_cadastro);
     getchar();
+    printf("\nVocê deseja fazer os cadastros automaticamente?\n");
+    printf("Digite 's' para sim ou 'n' para não\n");
+    scanf("%c", &escolha);
+    getchar();
+    while(1){
+        if(escolha == 's'||escolha == 'S'|| escolha == 'n'||escolha == 'N'){
+            if(escolha == 's'||escolha == 'S'){
+                if(qtd_cadastro > 15){
+                    printf("Apenas os ultimos 15 atletas serão completados automaticamente\n");
+                    cadastro(atleta, qtd_cadastro - 15);
+                    preencher_atletas(atleta, 15);
+                } else {
+                    preencher_atletas(atleta, contador + qtd_cadastro);
+                }
+            } else {
+                cadastro(atleta, qtd_cadastro);
+                menu();
+                break;
+            }
+        } else {
+            printf("Informação inválida. Tente novamente.");
+        }
+    }
+    return qtd_cadastro;
+}
+void cadastro(Atleta a1[], int qtd){
+    int qtd_cadastro = 0;
     
     for(; qtd < qtd_cadastro; qtd++){
         printf("\nCadastro do atleta número %d: ", (qtd + 1));
@@ -470,114 +498,31 @@ void iniciar_competicao(Competidor compet[], int qtd){
     }
     
 }
-void preencher_atletas(Atleta a1[], int qtd){
-    strcpy(a1[0].nome, "Ana dos Santos");
-    strcpy(a1[0].pais, "Brasil");
-    a1[0].sexo = 'F';https://www.onlinegdb.com/edit/jVlElyRwB#tab-stdin
-    a1[0].nascimento.dia = 21;
-    a1[0].nascimento.dia = 12;
-    a1[0].nascimento.dia = 1979;
+void preencher_atletas(Atleta atleta[], int qtd_cadastro){
+    // variaveis
+    char auto_nomes[15][MAXNOME] = {"Ana dos Santos", "John New", "Helena Silveira", "Esther J. Sechrist", "Keith V. Prentiss", 
+                                    "John S. McKinnon","Alisha Marsh", "Callum Hall", "Niamh Archer", "Abdul Baasid al-Sadri",
+                                    "Kaatima el-Nasser","Sharonda Powell", "João Silva", "Usain Bolt", "Haibaa el-Fayad"};
+                                    
+    char auto_pais[15][20] = {"Brasil","EUA","Brasil","EUA","EUA","EUA","Inglaterra","Inglaterra","Inglaterra",
+                              "Arabia Saudita","Arabia Saudita","Jamaica","Brasil","Jamaica","Arabia Sauditat"};
+                                     
+    char auto_sexo[15] = { 'F', 'M', 'F', 'F', 'F', 'M', 'M', 'M', 'F', 'M', 'F', 'F', 'M', 'M', 'F'};
+    int autonascimento_dia[15] = { 21, 15, 10, 2, 21, 16, 21, 8, 1, 17, 25, 8, 2, 1, 3 };
+    int autonascimento_mes[15] = { 12, 2, 2, 7, 12, 12, 2, 4, 1, 3, 8, 8, 1, 10, 6 };
+    int autonascimento_ano[15] = { 1979, 1959, 1979, 1970, 1974, 1967, 1962, 1957, 1979, 1969, 1970, 1978, 1979, 1963, 1965 };
     
-    strcpy(a1[1].nome, "John New");
-    strcpy(a1[1].pais, "EUA");
-    a1[1].sexo = 'M';
-    a1[1].nascimento.dia = 15;
-    a1[1].nascimento.dia = 2;
-    a1[1].nascimento.dia = 1959;
-    
-    strcpy(a1[2].nome, "Helena Silveira");
-    strcpy(a1[2].pais, "Brasil");
-    a1[2].sexo = 'F';
-    a1[2].nascimento.dia = 10;
-    a1[2].nascimento.dia = 2;
-    a1[2].nascimento.dia = 1979;
-    
-    strcpy(a1[3].nome, "Esther J. Sechrist");
-    strcpy(a1[3].pais, "EUA");
-    a1[3].sexo = 'F';
-    a1[3].nascimento.dia = 2;
-    a1[3].nascimento.dia = 7;
-    a1[3].nascimento.dia = 1970;
-    
-    strcpy(a1[4].nome, "Keith V. Prentiss");
-    strcpy(a1[4].pais, "EUA");
-    a1[4].sexo = 'F';
-    a1[4].nascimento.dia = 21;
-    a1[4].nascimento.dia = 12;
-    a1[4].nascimento.dia = 1974;
-    
-    strcpy(a1[5].nome, "John S. McKinnon");
-    strcpy(a1[5].pais, "EUA");
-    a1[5].sexo = 'M';
-    a1[5].nascimento.dia = 16;
-    a1[5].nascimento.dia = 12;
-    a1[5].nascimento.dia = 1967;
-    
-    strcpy(a1[6].nome, "Alisha Marsh");
-    strcpy(a1[6].pais, "Inglaterra");
-    a1[6].sexo = 'M';
-    a1[6].nascimento.dia = 21;
-    a1[6].nascimento.dia = 2;
-    a1[6].nascimento.dia = 1962;
-    
-    strcpy(a1[7].nome, "Callum Hall");
-    strcpy(a1[7].pais, "Inglaterra");
-    a1[7].sexo = 'M';
-    a1[7].nascimento.dia = 8;
-    a1[7].nascimento.dia = 4;
-    a1[7].nascimento.dia = 1957;
-    
-    strcpy(a1[8].nome, "Niamh Archer");
-    strcpy(a1[8].pais, "Inglaterra");
-    a1[8].sexo = 'F';
-    a1[8].nascimento.dia = 1;
-    a1[8].nascimento.dia = 1;
-    a1[8].nascimento.dia = 1979;
-    
-    strcpy(a1[9].nome, "Abdul Baasid al-Sadri");
-    strcpy(a1[9].pais, "Arabia Saudita");
-    a1[9].sexo = 'M';
-    a1[9].nascimento.dia = 17;
-    a1[9].nascimento.dia = 3;
-    a1[9].nascimento.dia = 1969;
-    
-    strcpy(a1[10].nome, "Kaatima el-Nasser");
-    strcpy(a1[10].pais, "Arabia Sauditat");
-    a1[10].sexo = 'F';
-    a1[10].nascimento.dia = 25;
-    a1[10].nascimento.dia = 8;
-    a1[10].nascimento.dia = 1970;
-    
-    strcpy(a1[11].nome, "Sharonda Powell ");
-    strcpy(a1[11].pais, "Jamaica");
-    a1[11].sexo = 'F';
-    a1[11].nascimento.dia = 8;
-    a1[11].nascimento.dia = 8;
-    a1[11].nascimento.dia = 1978;
-    
-    strcpy(a1[12].nome, "João Silva");
-    strcpy(a1[12].pais, "Brasil");
-    a1[12].sexo = 'M';
-    a1[12].nascimento.dia = 2;
-    a1[12].nascimento.dia = 1;
-    a1[12].nascimento.dia = 1979;
-    
-    strcpy(a1[13].nome, "Usain Bolt");
-    strcpy(a1[13].pais, "Jamaica");
-    a1[13].sexo = 'M';
-    a1[13].nascimento.dia = 1;
-    a1[13].nascimento.dia = 10;
-    a1[13].nascimento.dia = 1963;
-    
-    strcpy(a1[14].nome, "Haibaa el-Fayad");
-    strcpy(a1[14].pais, "Arabia Sauditat");
-    a1[14].sexo = 'F';
-    a1[14].nascimento.dia = 3;
-    a1[14].nascimento.dia = 6;
-    a1[14].nascimento.dia = 1965;
-    
-    qtd = 15;
-    
+    // processamento
+    for(int i = contador; i < qtd_cadastro; i++){
+        strcpy(atleta[contador].nome, auto_nomes[i]);
+        strcpy(atleta[contador].pais, auto_pais[i]);
+        atleta[contador].sexo = auto_sexo[i];
+        atleta[contador].nascimento.dia = autonascimento_dia[i];
+        atleta[contador].nascimento.mes = autonascimento_mes[i];
+        atleta[contador].nascimento.ano = autonascimento_ano[i];
+        contador++;
+    }
+    // saída
     printf("\nCadastro(s) finalizado(s)\n\n");
     menu();
 }
