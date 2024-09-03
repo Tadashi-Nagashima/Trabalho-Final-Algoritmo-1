@@ -47,15 +47,20 @@ int validar_sexo(char sexo);
 int validar_pais(char pais[]);
 
 int menu();
-void menu_competicao();
-void cadastro();
-void treinamento();
-void cadastrar_competicao();
+void menu_competicao(Atleta a1[], int qtd);
+void cadastro(Atleta a1[], int qtd);
+void iniciar_competicao(Competidor compet[], int qtd);
 
-void preencher_atletas (); //função temporária
+void treinamento(Atleta a1[], int qtd);
+Competicao cadastrar_competicao(Atleta a1[], int qtd);
 
-int contador = 0; // Se for usar a função preencher_atletas() alterar a variável para o número de atletas
+void preencher_atletas(Atleta a1[], int qtd); //função temporária
+
+int contador = 15; // Se for usar a função preencher_atletas() alterar a variável para o número de atletas
+int melhores[15];
+int melhores_atletas[15];
 Atleta atleta[100];
+Competidor treino[100];
 
 int main(){
     menu();
@@ -65,6 +70,8 @@ int main(){
 
 int menu(){
     int escolha = 0;
+    
+    
     printf("    _________________________________\n");
     printf("    |*******************************|\n");
     printf("    |Sistema Gerenciador de Corridas|\n");
@@ -81,11 +88,11 @@ int menu(){
         
         switch(escolha){
             case 1:
-                cadastro();
-                //preencher_atletas(); // Se for usar a função preencher_atletas() alterar a variável int contador para o número de atletas e quais atletas usar na função no final do programa
+                //cadastro(atleta, contador);
+                preencher_atletas(atleta, contador); // Se for usar a função preencher_atletas() alterar a variável int contador para o número de atletas e quais atletas usar na função no final do programa
                 break;
             case 2:
-                menu_competicao();
+                menu_competicao(atleta, contador);
                 break;
             case 3:
                 printf("\n    Encerrando...\n");
@@ -97,8 +104,11 @@ int menu(){
         }  
     }
 }
-void menu_competicao(){
+void menu_competicao(Atleta a1[], int qtd){
     int escolha = 0;
+    Competicao competicao;
+    Competidor competidores[100];
+    
     printf("    _________________________________\n");
     printf("    |*******************************|\n");
     printf("    |     Gerenciar Competição      |\n");
@@ -116,12 +126,13 @@ void menu_competicao(){
         
         switch(escolha){
             case 1:
-                cadastrar_competicao();
+                competicao = cadastrar_competicao(atleta, contador);
                 break;
             case 2:
-                treinamento();
+                treinamento(atleta, contador);
                 break;
             case 3:
+                iniciar_competicao(competidores, contador);
                 break;
             case 4:
                 menu();
@@ -132,80 +143,114 @@ void menu_competicao(){
         }  
     }
 }
-void cadastro(){
+void cadastro(Atleta a1[], int qtd){
     int qtd_cadastro = 0;
     
     printf("\nDigite quantos cadastros gostaria de fazer: ");
     scanf("%d", &qtd_cadastro);
     getchar();
     
-    for(; contador < qtd_cadastro; contador++){
-        printf("\nCadastro do atleta número %d: ", (contador + 1));
+    for(; qtd < qtd_cadastro; qtd++){
+        printf("\nCadastro do atleta número %d: ", (qtd + 1));
         // leitor de nomes
         do{
             printf("\nDigite o nome: ");
-            fgets(atleta[contador].nome, MAXNOME, stdin);
-            atleta[contador].nome[strlen(atleta[contador].nome) - 1] = '\0';
+            fgets(a1[qtd].nome, MAXNOME, stdin);
+            a1[qtd].nome[strlen(a1[qtd].nome) - 1] = '\0';
             
-            if(validar_nome(atleta[contador].nome) == 0){
+            if(validar_nome(a1[qtd].nome) == 0){
                printf("Informação inválida. Tente novamente."); 
             }
-        }while(validar_nome(atleta[contador].nome) != 1);
+        }while(validar_nome(a1[qtd].nome) != 1);
         // leitor de datas
         do{
             printf("Digite a data de nascimento (dd/mm/yyyy): ");
-            scanf("%d/%d/%d", &atleta[contador].nascimento.dia, &atleta[contador].nascimento.mes, &atleta[contador].nascimento.ano);
+            scanf("%d/%d/%d", &a1[qtd].nascimento.dia, &a1[qtd].nascimento.mes, &a1[qtd].nascimento.ano);
             getchar(); // tira o \n do scanf
             
-            if(validar_data(atleta[contador].nascimento) == 0){
+            if(validar_data(a1[qtd].nascimento) == 0){
                printf("Informação inválida. Tente novamente.\n\n"); 
             }
-            if(validar_data(atleta[contador].nascimento) == 2){
+            if(validar_data(a1[qtd].nascimento) == 2){
                 printf("O atleta possuí menos de 45 anos\n");
                 printf("Informação inválida. Tente novamente.\n\n");
             }
-        }while(validar_data(atleta[contador].nascimento) != 1);
+        }while(validar_data(a1[qtd].nascimento) != 1);
         // leitor de sexo
         do{
             printf("Digite o sexo: ");
-            scanf("%c", &atleta[contador].sexo);
+            scanf("%c", &a1[qtd].sexo);
             getchar(); // tira o \n do scanf
             
-            if(validar_sexo(atleta[contador].sexo) == 0){
+            if(validar_sexo(a1[qtd].sexo) == 0){
                printf("Informação inválida. Tente novamente.\n\n"); 
             }
-        }while(validar_sexo(atleta[contador].sexo) != 1);
+        }while(validar_sexo(a1[qtd].sexo) != 1);
         // leitor de países
         do{
             printf("Digite o país: ");
-            fgets(atleta[contador].pais, 35, stdin);
-            atleta[contador].pais[strlen(atleta[contador].pais) - 1] = '\0';
+            fgets(a1[qtd].pais, 35, stdin);
+            a1[qtd].pais[strlen(a1[qtd].pais) - 1] = '\0';
             
-            if(validar_pais(atleta[contador].pais) == 0){
+            if(validar_pais(a1[qtd].pais) == 0){
                printf("Informação inválida. Tente novamente.\n"); 
             }
-        }while(validar_pais(atleta[contador].pais) != 1);
+        }while(validar_pais(a1[qtd].pais) != 1);
     }
     
     printf("\nCadastro(s) finalizado(s)\n\n");
     menu();
 }
-void treinamento(){
-    Competidor treino[50];
+
+void ordenar_treino(Competidor t[], int qtd){
+    int i = 0;
+    int j = 0;
+    int temp = 0;
+    int temp_atleta = 0;
+    //int melhores[qtd];
+    //int melhores_atletas[qtd];
+    
+    for (i = 0; i < qtd; i++){
+        melhores[i] = INT_MAX;
+        for (j = 0; j < MAXTREINO; j++){
+            if (t[i].tempo[j] < melhores[i]){
+                melhores[i] = t[i].tempo[j];
+                
+            }
+        }
+        melhores_atletas[i] = i;
+    }
+    
+    for (i = 0; i < qtd; i++){
+        for (j = i + 1; j < qtd; j++){
+            if (melhores[i] > melhores[j]){
+                temp = melhores[i];
+                melhores[i] = melhores[j];
+                melhores[j] = temp;
+
+                temp_atleta = melhores_atletas[i];
+                melhores_atletas[i] = melhores_atletas[j];
+                melhores_atletas[j] = temp_atleta;
+            }
+        }
+    }
+}
+void treinamento(Atleta a1[], int qtd){
+    
     int i = 0;
     int j = 0;
     int temp = 0;
     int temp_atleta = 0;
     char escolha;
-    int melhores[contador];
-    int melhores_atletas[contador];
+    int melhores[qtd];
+    int melhores_atletas[qtd];
     
     printf("\nFase de Treinamento:\n\n");
-    for(i = 0; i < contador; i++){
-        strcpy(treino[i].atleta.nome, atleta[i].nome);
+    for(i = 0; i < qtd; i++){
+        strcpy(treino[i].atleta.nome, a1[i].nome);
     }
     while(escolha != 'S'){
-        for(i = 0; i < contador; i++){
+        for(i = 0; i < qtd; i++){
             printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
         }
 
@@ -215,7 +260,7 @@ void treinamento(){
     }
     printf("\nConfimado\n");
     
-    for(i = 0; i < contador; i++){
+    for(i = 0; i < qtd; i++){
         printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
         for(j = 0; j < MAXTREINO; j++){
             treino[i].tempo[j] = rand() % 101;
@@ -224,7 +269,7 @@ void treinamento(){
         printf("|\n\n");
     }
     
-    for (i = 0; i < contador; i++){
+    for (i = 0; i < qtd; i++){
         melhores[i] = INT_MAX;
         for (j = 0; j < MAXTREINO; j++){
             if (treino[i].tempo[j] < melhores[i]){
@@ -235,8 +280,8 @@ void treinamento(){
         melhores_atletas[i] = i;
     }
     
-    for (i = 0; i < contador; i++){
-        for (j = i + 1; j < contador; j++){
+    for (i = 0; i < qtd; i++){
+        for (j = i + 1; j < qtd; j++){
             if (melhores[i] > melhores[j]){
                 temp = melhores[i];
                 melhores[i] = melhores[j];
@@ -254,6 +299,14 @@ void treinamento(){
         printf("%s: %ds\n", treino[melhores_atletas[i]].atleta.nome, melhores[i]);
     }
     
+    escolha = ' ';
+    while(escolha != 'S'){
+        printf("\nVoltar ao menu? S/N\n");
+        scanf("%c", &escolha);
+        getchar();
+    }
+    
+    menu_competicao(atleta, contador);
 }
 int validar_nome(char nome[]){
     int i = 0;
@@ -323,8 +376,10 @@ int validar_pais(char pais[]){
     }
     return 0;
 }
-void cadastrar_competicao(){
+Competicao cadastrar_competicao(Atleta a1[], int qtd){
     Competicao competicao;
+    int i = 0;
+    char escolha;
     
     printf("\n\nCadastrar Competição:\n\n");
     
@@ -335,116 +390,193 @@ void cadastrar_competicao(){
     printf("Data da Competição: ");
     scanf("%d/%d/%d", &competicao.data.dia, &competicao.data.mes, &competicao.data.ano);
     
+    printf("Os corredores da competição são: ");
     
+    while(escolha != 'S'){
+       for(i = 0; i < qtd; i++){
+            printf("\nAtleta %d: %s", i + 1, a1[i].nome);
+        }
+        getchar();
+        printf("\nConfimar? S/N \n");
+        scanf("%c", &escolha);
+        
+    }
+    printf("\nConfimado\n");
+    
+    menu_competicao(atleta, contador);
+    return competicao;
+}
+void iniciar_competicao(Competidor compet[], int qtd){
+    int i = 0;
+    int j = 0;
+    int temp = 0;
+    int temp_atleta = 0;
+    int soma[MAXMELHORES];
+    int soma_atletas[MAXMELHORES];
+    int maior = 0;
+    int menor = 0;
+    for(i = 0; i < qtd; i++){
+        strcpy(compet[i].atleta.nome, treino[i].atleta.nome);
+    }
+    
+    ordenar_treino(treino, qtd);
+
+    printf("\nAtletas Classificados:\n");
+    
+    for(i = 0; i < MAXMELHORES; i++){
+        printf("\nAtleta %d: %s\n", i + 1, compet[melhores_atletas[i]].atleta.nome);
+    }
+    printf("\n\n");
+    for(i = 0; i < MAXMELHORES; i++){
+        int maior = INT_MIN;
+        int menor = INT_MAX;
+        soma[i] = 0;
+        printf("\nAtleta %d: %s\n", i + 1, compet[melhores_atletas[i]].atleta.nome);
+        for(j = 0; j < 5; j++){
+            compet[melhores_atletas[i]].tempo[j] = rand() % 101;
+            printf("| %ds ", compet[melhores_atletas[i]].tempo[j]);
+            if (maior < compet[melhores_atletas[i]].tempo[j]){
+                maior = compet[melhores_atletas[i]].tempo[j];
+            }
+            if (menor > compet[melhores_atletas[i]].tempo[j]){
+                menor = compet[melhores_atletas[i]].tempo[j];
+            }
+            soma[i] += compet[melhores_atletas[i]].tempo[j];
+        }
+        printf("|\n\n");
+        soma[i] = soma[i] - (maior + menor);
+        printf("\nSoma: %d\n\n", soma[i]);
+        soma_atletas[i] = melhores_atletas[i];
+    }
+    
+    
+    for (i = 0; i < MAXMELHORES; i++){
+        
+        for (j = i + 1; j < MAXMELHORES; j++){
+            if (soma[i] > soma[j]){
+                temp = soma[i];
+                soma[i] = soma[j];
+                soma[j] = temp;
+                
+                temp_atleta = soma_atletas[i];
+                soma_atletas[i] = soma_atletas[j];
+                soma_atletas[j] = temp_atleta;
+            }
+        }
+    }
+    printf("As 5 melhores somatórias dos tempos: \n\n");
+    for(i = 0; i < 5; i++){
+        printf("%s: %d\n", compet[soma_atletas[i]].atleta.nome,soma[i]);
+    }
     
 }
-void preencher_atletas(){
-    strcpy(atleta[0].nome, "Ana dos Santos");
-    strcpy(atleta[0].pais, "Brasil");
-    atleta[0].sexo = 'F';
-    atleta[0].nascimento.dia = 21;
-    atleta[0].nascimento.dia = 12;
-    atleta[0].nascimento.dia = 1979;
+void preencher_atletas(Atleta a1[], int qtd){
+    strcpy(a1[0].nome, "Ana dos Santos");
+    strcpy(a1[0].pais, "Brasil");
+    a1[0].sexo = 'F';https://www.onlinegdb.com/edit/jVlElyRwB#tab-stdin
+    a1[0].nascimento.dia = 21;
+    a1[0].nascimento.dia = 12;
+    a1[0].nascimento.dia = 1979;
     
-    strcpy(atleta[1].nome, "John New");
-    strcpy(atleta[1].pais, "EUA");
-    atleta[1].sexo = 'M';
-    atleta[1].nascimento.dia = 15;
-    atleta[1].nascimento.dia = 2;
-    atleta[1].nascimento.dia = 1959;
+    strcpy(a1[1].nome, "John New");
+    strcpy(a1[1].pais, "EUA");
+    a1[1].sexo = 'M';
+    a1[1].nascimento.dia = 15;
+    a1[1].nascimento.dia = 2;
+    a1[1].nascimento.dia = 1959;
     
-    strcpy(atleta[2].nome, "Helena Silveira");
-    strcpy(atleta[2].pais, "Brasil");
-    atleta[2].sexo = 'F';
-    atleta[2].nascimento.dia = 10;
-    atleta[2].nascimento.dia = 2;
-    atleta[2].nascimento.dia = 1979;
+    strcpy(a1[2].nome, "Helena Silveira");
+    strcpy(a1[2].pais, "Brasil");
+    a1[2].sexo = 'F';
+    a1[2].nascimento.dia = 10;
+    a1[2].nascimento.dia = 2;
+    a1[2].nascimento.dia = 1979;
     
-    strcpy(atleta[3].nome, "Esther J. Sechrist");
-    strcpy(atleta[3].pais, "EUA");
-    atleta[3].sexo = 'F';
-    atleta[3].nascimento.dia = 2;
-    atleta[3].nascimento.dia = 7;
-    atleta[3].nascimento.dia = 1970;
+    strcpy(a1[3].nome, "Esther J. Sechrist");
+    strcpy(a1[3].pais, "EUA");
+    a1[3].sexo = 'F';
+    a1[3].nascimento.dia = 2;
+    a1[3].nascimento.dia = 7;
+    a1[3].nascimento.dia = 1970;
     
-    strcpy(atleta[4].nome, "Keith V. Prentiss");
-    strcpy(atleta[4].pais, "EUA");
-    atleta[4].sexo = 'F';
-    atleta[4].nascimento.dia = 21;
-    atleta[4].nascimento.dia = 12;
-    atleta[4].nascimento.dia = 1974;
+    strcpy(a1[4].nome, "Keith V. Prentiss");
+    strcpy(a1[4].pais, "EUA");
+    a1[4].sexo = 'F';
+    a1[4].nascimento.dia = 21;
+    a1[4].nascimento.dia = 12;
+    a1[4].nascimento.dia = 1974;
     
-    strcpy(atleta[5].nome, "John S. McKinnon");
-    strcpy(atleta[5].pais, "EUA");
-    atleta[5].sexo = 'M';
-    atleta[5].nascimento.dia = 16;
-    atleta[5].nascimento.dia = 12;
-    atleta[5].nascimento.dia = 1967;
+    strcpy(a1[5].nome, "John S. McKinnon");
+    strcpy(a1[5].pais, "EUA");
+    a1[5].sexo = 'M';
+    a1[5].nascimento.dia = 16;
+    a1[5].nascimento.dia = 12;
+    a1[5].nascimento.dia = 1967;
     
-    strcpy(atleta[6].nome, "Alisha Marsh");
-    strcpy(atleta[6].pais, "Inglaterra");
-    atleta[6].sexo = 'M';
-    atleta[6].nascimento.dia = 21;
-    atleta[6].nascimento.dia = 2;
-    atleta[6].nascimento.dia = 1962;
+    strcpy(a1[6].nome, "Alisha Marsh");
+    strcpy(a1[6].pais, "Inglaterra");
+    a1[6].sexo = 'M';
+    a1[6].nascimento.dia = 21;
+    a1[6].nascimento.dia = 2;
+    a1[6].nascimento.dia = 1962;
     
-    strcpy(atleta[7].nome, "Callum Hall");
-    strcpy(atleta[7].pais, "Inglaterra");
-    atleta[7].sexo = 'M';
-    atleta[7].nascimento.dia = 8;
-    atleta[7].nascimento.dia = 4;
-    atleta[7].nascimento.dia = 1957;
+    strcpy(a1[7].nome, "Callum Hall");
+    strcpy(a1[7].pais, "Inglaterra");
+    a1[7].sexo = 'M';
+    a1[7].nascimento.dia = 8;
+    a1[7].nascimento.dia = 4;
+    a1[7].nascimento.dia = 1957;
     
-    strcpy(atleta[8].nome, "Niamh Archer");
-    strcpy(atleta[8].pais, "Inglaterra");
-    atleta[8].sexo = 'F';
-    atleta[8].nascimento.dia = 1;
-    atleta[8].nascimento.dia = 1;
-    atleta[8].nascimento.dia = 1979;
+    strcpy(a1[8].nome, "Niamh Archer");
+    strcpy(a1[8].pais, "Inglaterra");
+    a1[8].sexo = 'F';
+    a1[8].nascimento.dia = 1;
+    a1[8].nascimento.dia = 1;
+    a1[8].nascimento.dia = 1979;
     
-    strcpy(atleta[9].nome, "Abdul Baasid al-Sadri");
-    strcpy(atleta[9].pais, "Arabia Saudita");
-    atleta[9].sexo = 'M';
-    atleta[9].nascimento.dia = 17;
-    atleta[9].nascimento.dia = 3;
-    atleta[9].nascimento.dia = 1969;
+    strcpy(a1[9].nome, "Abdul Baasid al-Sadri");
+    strcpy(a1[9].pais, "Arabia Saudita");
+    a1[9].sexo = 'M';
+    a1[9].nascimento.dia = 17;
+    a1[9].nascimento.dia = 3;
+    a1[9].nascimento.dia = 1969;
     
-    strcpy(atleta[10].nome, "Kaatima el-Nasser");
-    strcpy(atleta[10].pais, "Arabia Sauditat");
-    atleta[10].sexo = 'F';
-    atleta[10].nascimento.dia = 25;
-    atleta[10].nascimento.dia = 8;
-    atleta[10].nascimento.dia = 1970;
+    strcpy(a1[10].nome, "Kaatima el-Nasser");
+    strcpy(a1[10].pais, "Arabia Sauditat");
+    a1[10].sexo = 'F';
+    a1[10].nascimento.dia = 25;
+    a1[10].nascimento.dia = 8;
+    a1[10].nascimento.dia = 1970;
     
-    strcpy(atleta[11].nome, "Sharonda Powell ");
-    strcpy(atleta[11].pais, "Jamaica");
-    atleta[11].sexo = 'F';
-    atleta[11].nascimento.dia = 8;
-    atleta[11].nascimento.dia = 8;
-    atleta[11].nascimento.dia = 1978;
+    strcpy(a1[11].nome, "Sharonda Powell ");
+    strcpy(a1[11].pais, "Jamaica");
+    a1[11].sexo = 'F';
+    a1[11].nascimento.dia = 8;
+    a1[11].nascimento.dia = 8;
+    a1[11].nascimento.dia = 1978;
     
-    strcpy(atleta[12].nome, "João Silva");
-    strcpy(atleta[12].pais, "Brasil");
-    atleta[12].sexo = 'M';
-    atleta[12].nascimento.dia = 2;
-    atleta[12].nascimento.dia = 1;
-    atleta[12].nascimento.dia = 1979;
+    strcpy(a1[12].nome, "João Silva");
+    strcpy(a1[12].pais, "Brasil");
+    a1[12].sexo = 'M';
+    a1[12].nascimento.dia = 2;
+    a1[12].nascimento.dia = 1;
+    a1[12].nascimento.dia = 1979;
     
-    strcpy(atleta[13].nome, "Usain Bolt");
-    strcpy(atleta[13].pais, "Jamaica");
-    atleta[13].sexo = 'M';
-    atleta[13].nascimento.dia = 1;
-    atleta[13].nascimento.dia = 10;
-    atleta[13].nascimento.dia = 1963;
+    strcpy(a1[13].nome, "Usain Bolt");
+    strcpy(a1[13].pais, "Jamaica");
+    a1[13].sexo = 'M';
+    a1[13].nascimento.dia = 1;
+    a1[13].nascimento.dia = 10;
+    a1[13].nascimento.dia = 1963;
     
-    strcpy(atleta[14].nome, "Haibaa el-Fayad");
-    strcpy(atleta[14].pais, "Arabia Sauditat");
-    atleta[14].sexo = 'F';
-    atleta[14].nascimento.dia = 3;
-    atleta[14].nascimento.dia = 6;
-    atleta[14].nascimento.dia = 1965;
+    strcpy(a1[14].nome, "Haibaa el-Fayad");
+    strcpy(a1[14].pais, "Arabia Sauditat");
+    a1[14].sexo = 'F';
+    a1[14].nascimento.dia = 3;
+    a1[14].nascimento.dia = 6;
+    a1[14].nascimento.dia = 1965;
     
-    contador = 15;
+    qtd = 15;
     
     printf("\nCadastro(s) finalizado(s)\n\n");
     menu();
