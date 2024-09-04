@@ -45,6 +45,7 @@ int validar_data(Data nascimento);
 int validar_nome(char nome[]);
 int validar_sexo(char sexo);
 int validar_pais(char pais[]);
+void formatar_tempo(int tempo);
 
 int menu();
 void precadastro();
@@ -270,7 +271,8 @@ void treinamento(Atleta a1[], int qtd){
     int j = 0;
     int temp = 0;
     int temp_atleta = 0;
-    char escolha;
+    char escolha = ' ';
+    int escolha_atleta = 101;
     int melhores[qtd];
     int melhores_atletas[qtd];
     
@@ -278,18 +280,36 @@ void treinamento(Atleta a1[], int qtd){
     for(i = 0; i < qtd; i++){
         strcpy(treino[i].atleta.nome, a1[i].nome);
     }
-    while(escolha != 'S'){
+    while(escolha == ' '){
         for(i = 0; i < qtd; i++){
             printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
         }
-
-        printf("\nConfimar? S/N \n");
+        
+        printf("\nGostaria de digitar o tempo de algum atleta? S/N \n");
         scanf("%c", &escolha);
         getchar();
     }
-    printf("\nConfimado\n");
+    if(escolha == 'S'){
+        printf("\nEscolha o atleta: ");
+        scanf("%d", &escolha_atleta);
+        escolha_atleta--;
+        printf("%s", treino[escolha_atleta].atleta.nome);
+        printf("\nDigite os tempos: \n");
+        for(i = 0; i < MAXTREINO; i++){
+            printf("\nTempo %d: ", i + 1);
+            scanf("%d", &treino[escolha_atleta].tempo[i]);
+        }
+    }
     
     for(i = 0; i < qtd; i++){
+        if(i == escolha_atleta){
+            printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
+            for(j = 0; j < MAXTREINO; j++){
+                printf("| %ds ", treino[i].tempo[j]);
+            }
+            printf("|\n\n");
+            continue;
+        }
         printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
         for(j = 0; j < MAXTREINO; j++){
             treino[i].tempo[j] = rand() % 101;
@@ -332,7 +352,7 @@ void treinamento(Atleta a1[], int qtd){
     while(escolha != 'S'){
         printf("\nVoltar ao menu? S/N\n");
         scanf("%c", &escolha);
-        getchar();
+        
     }
     
     menu_competicao(atleta, contador);
@@ -444,6 +464,8 @@ void iniciar_competicao(Competidor compet[], int qtd){
     int soma_atletas[MAXMELHORES];
     int maior = 0;
     int menor = 0;
+    char escolha;
+    int escolha_atleta = 101;
     for(i = 0; i < qtd; i++){
         strcpy(compet[i].atleta.nome, treino[i].atleta.nome);
     }
@@ -455,11 +477,44 @@ void iniciar_competicao(Competidor compet[], int qtd){
     for(i = 0; i < MAXMELHORES; i++){
         printf("\nAtleta %d: %s\n", i + 1, compet[melhores_atletas[i]].atleta.nome);
     }
+        printf("\nGostaria de digitar o tempo de algum atleta? S/N \n");
+        scanf("%c", &escolha);
+        getchar();
     printf("\n\n");
+    
+    if(escolha == 'S'){
+        printf("Escolha o atleta: ");
+        scanf("%d", &escolha_atleta);
+        escolha_atleta--;
+        printf("%s\n", compet[melhores_atletas[escolha_atleta]].atleta.nome);
+        for(i = 0; i < 5; i++){
+            printf("\nTempo %d: ", i + 1);
+            scanf("%d", &compet[melhores_atletas[escolha_atleta]].tempo[i]);
+        }
+    }
     for(i = 0; i < MAXMELHORES; i++){
         int maior = INT_MIN;
         int menor = INT_MAX;
         soma[i] = 0;
+        if(i == escolha_atleta){
+            printf("\nAtleta %d: %s\n", i + 1, compet[melhores_atletas[i]].atleta.nome);
+            for(j = 0; j < 5; j++){
+            
+                printf("| %ds ", compet[melhores_atletas[i]].tempo[j]);
+                if (maior < compet[melhores_atletas[i]].tempo[j]){
+                    maior = compet[melhores_atletas[i]].tempo[j];
+                }
+                if (menor > compet[melhores_atletas[i]].tempo[j]){
+                    menor = compet[melhores_atletas[i]].tempo[j];
+                }
+                soma[i] += compet[melhores_atletas[i]].tempo[j];
+            }
+            printf("|\n\n");
+            soma[i] = soma[i] - (maior + menor);
+            printf("\nSoma: %d\n\n", soma[i]);
+            soma_atletas[i] = melhores_atletas[i];
+            continue;
+        }
         printf("\nAtleta %d: %s\n", i + 1, compet[melhores_atletas[i]].atleta.nome);
         for(j = 0; j < 5; j++){
             compet[melhores_atletas[i]].tempo[j] = rand() % 101;
@@ -493,12 +548,30 @@ void iniciar_competicao(Competidor compet[], int qtd){
             }
         }
     }
-    printf("Somatórias dos tempos: \n\n");
-    for(i = 0; i < 3; i++){
-        printf("***%s: %d***\n", compet[soma_atletas[i]].atleta.nome,soma[i]);
-    }
+    printf("    Classificação \n\n");
+    printf("        Pódio: \n\n");
+    printf("========================\n");
+    i = 0;
+    printf("    *** Ouro ***\n");
+    printf("    %3s  \n", compet[soma_atletas[i]].atleta.nome);
+    printf("        %3s\n", atleta[soma_atletas[i]].pais);
+    printf("    Tempo: %d\n\n", soma[i]);
+    i++;
+    printf("    *** Prata ***\n");
+    printf("    %3s  \n", compet[soma_atletas[i]].atleta.nome);
+    printf("        %3s\n", atleta[soma_atletas[i]].pais);
+    printf("    Tempo: %d\n\n", soma[i]);
+    i++;
+    printf("    *** Bronze ***\n");
+    printf("    %3s  \n", compet[soma_atletas[i]].atleta.nome);
+    printf("        %3s\n", atleta[soma_atletas[i]].pais);
+    printf("    Tempo: %d\n\n", soma[i]);
+    i++;
+    printf("========================\n");
     for(i = 3; i < MAXMELHORES; i++){
-        printf("%s: %d\n", compet[soma_atletas[i]].atleta.nome,soma[i]);
+       printf(" %3s\n", compet[soma_atletas[i]].atleta.nome);
+        printf("    %3s\n", atleta[soma_atletas[i]].pais);
+        printf("    Tempo: %d\n\n", soma[i]);
     }
     
 }
@@ -526,6 +599,6 @@ void preencher_atletas(Atleta atleta[], int qtd_cadastro){
         atleta[contador].nascimento.ano = autonascimento_ano[i];
         contador++;
     }
-    // saída
-    printf("\nCadastro(s) finalizado(s)\n\n");
+	// saída
+	printf("\nCadastro(s) finalizado(s)\n\n");
 }
