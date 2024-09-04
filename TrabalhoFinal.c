@@ -305,15 +305,17 @@ void treinamento(Atleta a1[], int qtd){
         if(i == escolha_atleta){
             printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
             for(j = 0; j < MAXTREINO; j++){
-                printf("| %ds ", treino[i].tempo[j]);
+                printf("|  ");
+                formatar_tempo(treino[i].tempo[j]);
             }
-            printf("|\n\n");
+            printf(" | \n\n");
             continue;
         }
         printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
         for(j = 0; j < MAXTREINO; j++){
             treino[i].tempo[j] = rand() % 101;
-            printf("| %ds ", treino[i].tempo[j]);
+            printf("|");
+            formatar_tempo(treino[i].tempo[j]);
         }
         printf("|\n\n");
     }
@@ -345,7 +347,9 @@ void treinamento(Atleta a1[], int qtd){
     
     printf("\nMelhores Tempos:\n");
     for(i = 0; i < MAXMELHORES; i++){
-        printf("%s: %ds\n", treino[melhores_atletas[i]].atleta.nome, melhores[i]);
+        printf("%s: ", treino[melhores_atletas[i]].atleta.nome);
+        formatar_tempo(melhores[i]);
+        printf("\n");
     }
     
     escolha = ' ';
@@ -511,7 +515,9 @@ void iniciar_competicao(Competidor compet[], int qtd){
             }
             printf("|\n\n");
             soma[i] = soma[i] - (maior + menor);
-            printf("\nSoma: %d\n\n", soma[i]);
+            printf("\nSoma: ");
+            formatar_tempo(soma[i]);
+            printf("\n\n");
             soma_atletas[i] = melhores_atletas[i];
             continue;
         }
@@ -529,7 +535,9 @@ void iniciar_competicao(Competidor compet[], int qtd){
         }
         printf("|\n\n");
         soma[i] = soma[i] - (maior + menor);
-        printf("\nSoma: %d\n\n", soma[i]);
+        printf("\nSoma: ");
+        formatar_tempo(soma[i]);
+        printf("\n\n");
         soma_atletas[i] = melhores_atletas[i];
     }
     
@@ -555,25 +563,42 @@ void iniciar_competicao(Competidor compet[], int qtd){
     printf("    *** Ouro ***\n");
     printf("    %3s  \n", compet[soma_atletas[i]].atleta.nome);
     printf("        %3s\n", atleta[soma_atletas[i]].pais);
-    printf("    Tempo: %d\n\n", soma[i]);
+    printf("    Tempo: ");
+    formatar_tempo(soma[i]);
+    printf("\n\n");
     i++;
     printf("    *** Prata ***\n");
     printf("    %3s  \n", compet[soma_atletas[i]].atleta.nome);
     printf("        %3s\n", atleta[soma_atletas[i]].pais);
-    printf("    Tempo: %d\n\n", soma[i]);
+    printf("    Tempo: ");
+    formatar_tempo(soma[i]);
+    printf("\n\n");
     i++;
     printf("    *** Bronze ***\n");
     printf("    %3s  \n", compet[soma_atletas[i]].atleta.nome);
     printf("        %3s\n", atleta[soma_atletas[i]].pais);
-    printf("    Tempo: %d\n\n", soma[i]);
+    printf("    Tempo: ");
+    formatar_tempo(soma[i]);
+    printf("\n\n");
     i++;
     printf("========================\n");
     for(i = 3; i < MAXMELHORES; i++){
        printf(" %3s\n", compet[soma_atletas[i]].atleta.nome);
         printf("    %3s\n", atleta[soma_atletas[i]].pais);
-        printf("    Tempo: %d\n\n", soma[i]);
+        printf("    Tempo: ");
+        formatar_tempo(soma[i]);
+        printf("\n\n");
     }
     
+}
+void formatar_tempo(int tempo){
+    int minuto = 0;
+    int segundo = 0;
+    
+    minuto = tempo / 60;
+    segundo = tempo % 60;
+    
+    printf("%02d:%02d", minuto, segundo);
 }
 void preencher_atletas(Atleta atleta[], int qtd_cadastro){
     // variaveis
