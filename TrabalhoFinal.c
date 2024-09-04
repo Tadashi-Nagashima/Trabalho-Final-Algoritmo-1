@@ -47,7 +47,7 @@ int validar_sexo(char sexo);
 int validar_pais(char pais[]);
 
 int menu();
-int precadastro();
+void precadastro();
 void menu_competicao(Atleta a1[], int qtd);
 void cadastro(Atleta a1[], int qtd);
 void iniciar_competicao(Competidor compet[], int qtd);
@@ -143,7 +143,7 @@ void menu_competicao(Atleta a1[], int qtd){
         }  
     }
 }
-int precadastro(){
+void precadastro(){
     int qtd_cadastro = 0;
     char escolha;
 
@@ -151,21 +151,23 @@ int precadastro(){
     scanf("%d", &qtd_cadastro);
     getchar();
     printf("\nVocê deseja fazer os cadastros automaticamente?\n");
-    printf("Digite 's' para sim ou 'n' para não\n");
+    printf("Digite 'S' para sim ou 'N' para não\n");
     scanf("%c", &escolha);
     getchar();
     while(1){
         if(escolha == 's'||escolha == 'S'|| escolha == 'n'||escolha == 'N'){
             if(escolha == 's'||escolha == 'S'){
-                if(qtd_cadastro > 15){
+                if(qtd_cadastro > 15 && contador < 15){
                     printf("Apenas os ultimos 15 atletas serão completados automaticamente\n");
-                    cadastro(atleta, qtd_cadastro - 15);
                     preencher_atletas(atleta, 15);
-                } else {
+                    cadastro(atleta, qtd_cadastro);
+                    break;
+                } else if (contador < 15){
                     preencher_atletas(atleta, contador + qtd_cadastro);
+                    break;
                 }
             } else {
-                cadastro(atleta, qtd_cadastro);
+                cadastro(atleta, contador + qtd_cadastro);
                 menu();
                 break;
             }
@@ -173,61 +175,61 @@ int precadastro(){
             printf("Informação inválida. Tente novamente.");
         }
     }
-    return qtd_cadastro;
+    menu();
 }
 void cadastro(Atleta a1[], int qtd){
     int qtd_cadastro = 0;
     
-    for(; qtd < qtd_cadastro; qtd++){
-        printf("\nCadastro do atleta número %d: ", (qtd + 1));
+    for(qtd_cadastro = contador; qtd_cadastro < qtd; qtd_cadastro++){
+        printf("\nCadastro do atleta número %d: ", (qtd_cadastro + 1));
         // leitor de nomes
         do{
             printf("\nDigite o nome: ");
-            fgets(a1[qtd].nome, MAXNOME, stdin);
-            a1[qtd].nome[strlen(a1[qtd].nome) - 1] = '\0';
+            fgets(a1[qtd_cadastro].nome, MAXNOME, stdin);
+            a1[qtd_cadastro].nome[strlen(a1[qtd_cadastro].nome) - 1] = '\0';
             
-            if(validar_nome(a1[qtd].nome) == 0){
+            if(validar_nome(a1[qtd_cadastro].nome) == 0){
                printf("Informação inválida. Tente novamente."); 
             }
-        }while(validar_nome(a1[qtd].nome) != 1);
+        }while(validar_nome(a1[qtd_cadastro].nome) != 1);
         // leitor de datas
         do{
             printf("Digite a data de nascimento (dd/mm/yyyy): ");
-            scanf("%d/%d/%d", &a1[qtd].nascimento.dia, &a1[qtd].nascimento.mes, &a1[qtd].nascimento.ano);
+            scanf("%d/%d/%d", &a1[qtd_cadastro].nascimento.dia, &a1[qtd_cadastro].nascimento.mes, &a1[qtd_cadastro].nascimento.ano);
             getchar(); // tira o \n do scanf
             
-            if(validar_data(a1[qtd].nascimento) == 0){
+            if(validar_data(a1[qtd_cadastro].nascimento) == 0){
                printf("Informação inválida. Tente novamente.\n\n"); 
             }
-            if(validar_data(a1[qtd].nascimento) == 2){
+            if(validar_data(a1[qtd_cadastro].nascimento) == 2){
                 printf("O atleta possuí menos de 45 anos\n");
                 printf("Informação inválida. Tente novamente.\n\n");
             }
-        }while(validar_data(a1[qtd].nascimento) != 1);
+        }while(validar_data(a1[qtd_cadastro].nascimento) != 1);
         // leitor de sexo
         do{
             printf("Digite o sexo: ");
-            scanf("%c", &a1[qtd].sexo);
+            scanf("%c", &a1[qtd_cadastro].sexo);
             getchar(); // tira o \n do scanf
             
-            if(validar_sexo(a1[qtd].sexo) == 0){
+            if(validar_sexo(a1[qtd_cadastro].sexo) == 0){
                printf("Informação inválida. Tente novamente.\n\n"); 
             }
-        }while(validar_sexo(a1[qtd].sexo) != 1);
+        }while(validar_sexo(a1[qtd_cadastro].sexo) != 1);
         // leitor de países
         do{
             printf("Digite o país: ");
-            fgets(a1[qtd].pais, 35, stdin);
-            a1[qtd].pais[strlen(a1[qtd].pais) - 1] = '\0';
+            fgets(a1[qtd_cadastro].pais, 35, stdin);
+            a1[qtd_cadastro].pais[strlen(a1[qtd_cadastro].pais) - 1] = '\0';
             
-            if(validar_pais(a1[qtd].pais) == 0){
+            if(validar_pais(a1[qtd_cadastro].pais) == 0){
                printf("Informação inválida. Tente novamente.\n"); 
             }
-        }while(validar_pais(a1[qtd].pais) != 1);
+        }while(validar_pais(a1[qtd_cadastro].pais) != 1);
     }
-    
+    contador++;
     printf("\nCadastro(s) finalizado(s)\n\n");
-    menu();
+    
 }
 
 void ordenar_treino(Competidor t[], int qtd){
@@ -264,7 +266,6 @@ void ordenar_treino(Competidor t[], int qtd){
     }
 }
 void treinamento(Atleta a1[], int qtd){
-    
     int i = 0;
     int j = 0;
     int temp = 0;
@@ -492,8 +493,11 @@ void iniciar_competicao(Competidor compet[], int qtd){
             }
         }
     }
-    printf("As 5 melhores somatórias dos tempos: \n\n");
-    for(i = 0; i < 5; i++){
+    printf("Somatórias dos tempos: \n\n");
+    for(i = 0; i < 3; i++){
+        printf("***%s: %d***\n", compet[soma_atletas[i]].atleta.nome,soma[i]);
+    }
+    for(i = 3; i < MAXMELHORES; i++){
         printf("%s: %d\n", compet[soma_atletas[i]].atleta.nome,soma[i]);
     }
     
@@ -524,5 +528,4 @@ void preencher_atletas(Atleta atleta[], int qtd_cadastro){
     }
     // saída
     printf("\nCadastro(s) finalizado(s)\n\n");
-    menu();
 }
