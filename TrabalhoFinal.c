@@ -1,7 +1,7 @@
 /*
 Nomes: Luiz Felipe Costa Camargo e Tadashi Bello Nagashima
 Turma: EC41A - Algoritmos 1 - C11
-Data: 
+Data: 05/09/2024
 Enunciado: Desenvolver um programa em Linguagem C (ANSI C) para gerenciar e analisar dados relacionados ao Circuito Mundial de Corrida de Carrinho de Rolemã Senior. 
 O sistema deve organizar e validar informações sobre atletas, treinamento/classificação, competições e resultados finais das provas.
 A estrutura de dados será baseada em registros (structs) e vetores/matrizes.
@@ -16,6 +16,9 @@ A estrutura de dados será baseada em registros (structs) e vetores/matrizes.
 #define MAXNOME 50
 #define MAXTREINO 7
 #define MAXMELHORES 8
+#define LIMITEATLETAS 100
+#define LIMITEAUTOMATICO 15
+#define LIMITEAUTOMATICOTXT "15"
 
 typedef struct data{
     int dia;
@@ -36,12 +39,13 @@ typedef struct competidor{
 } Competidor;
 
 typedef struct competicao{
-    char nome[MAXNOME];
+    char nome[60];
     Data data;
     Competidor corredores[MAXMELHORES];
 } Competicao;
 
 int validar_data(Data nascimento);
+int validar_datacompeticao(Data competicao);
 int validar_nome(char nome[]);
 int validar_sexo(char sexo);
 int validar_pais(char pais[]);
@@ -51,18 +55,29 @@ int menu();
 void precadastro();
 void menu_competicao(Atleta a1[], int qtd);
 void cadastro(Atleta a1[], int qtd);
-void iniciar_competicao(Competidor compet[], int qtd);
+void menu_pos_competicao();
+void menu_analisar_competicao(Competidor compet[], int qtd, Competicao competi);
 
-void treinamento(Atleta a1[], int qtd);
-Competicao cadastrar_competicao(Atleta a1[], int qtd);
+void iniciar_competicao(Competidor compet[], int qtd, Competicao competi);
+void treinamento(Atleta a1[], int qtd, Competicao competi);
+void cadastrar_competicao(Atleta a1[], int qtd);
+void agrupar_paises(Competicao competicao);
+void agrupar_sexo(Competicao competicao, char sexo);
+void mostrar_mais_velhos(Atleta a1[]);
+void analisar_competicao(Competidor compet[], int qtd, Competicao competi);
+
 
 void preencher_atletas(Atleta atleta[], int qtd_cadastro); //função temporária
 
 int contador = 0;
-int melhores[15];
-int melhores_atletas[15];
-Atleta atleta[100];
-Competidor treino[100];
+int melhores[LIMITEATLETAS];
+int melhores_atletas[LIMITEATLETAS];
+Atleta atleta[LIMITEATLETAS];
+Competidor treino[LIMITEATLETAS];
+Competicao competicao;
+Competidor competidores[LIMITEATLETAS];
+int soma[MAXMELHORES];
+int soma_atletas[MAXMELHORES];
 
 int main(){
     menu();
@@ -73,14 +88,14 @@ int main(){
 int menu(){
     int escolha = 0;
     
-    
     printf("    _________________________________\n");
     printf("    |*******************************|\n");
     printf("    |Sistema Gerenciador de Corridas|\n");
     printf("    |*******************************|\n");
     printf("    |    1. Cadastrar Atleta        |\n");   
-    printf("    |    2. Competição              |\n");
-    printf("    |    3. Encerrar programa       |\n");
+    printf("    |    2. Cadastrar Competição    |\n"); 
+    printf("    |    3. Gerenciar Competição    |\n");
+    printf("    |    4. Encerrar programa       |\n");
     printf("    |*******************************|\n\n");
     printf("    Escolha dentre as opções: ");
     
@@ -93,30 +108,72 @@ int menu(){
                 precadastro();
                 break;
             case 2:
-                menu_competicao(atleta, contador);
+                cadastrar_competicao(atleta, contador);
                 break;
             case 3:
+                if(strcmp(competicao.nome, "") == 0){
+                    printf("    Não existe competição.\n");
+                    printf("    Escolha dentre as opções acima: ");
+                } else{
+                   menu_competicao(atleta, contador);
+                   break;
+                }
+                break;
+            case 4:
                 printf("\n    Encerrando...\n");
                 return 0;
                 break;
             default:
-                printf("Opção inválida. Tente novamente.\n");
-                printf("Escolha dentre as opções acima: ");
+                printf("    Opção inválida. Tente novamente.\n");
+                printf("    Escolha dentre as opções acima: ");
         }  
     }
 }
 void menu_competicao(Atleta a1[], int qtd){
     int escolha = 0;
-    Competicao competicao;
-    Competidor competidores[100];
+    Competidor competidores[LIMITEATLETAS];
     
     printf("    _________________________________\n");
     printf("    |*******************************|\n");
     printf("    |     Gerenciar Competição      |\n");
     printf("    |*******************************|\n");
-    printf("    |    1. Cadastrar Competição    |\n");   
-    printf("    |    2. Treinamento             |\n");
-    printf("    |    3. Iniciar Competição      |\n");
+    printf("    |    1. Treinamento             |\n");
+    printf("    |    2. Iniciar Competição      |\n");
+    printf("    |    3. Voltar                  |\n");
+    printf("    |*******************************|\n\n");
+    printf("    Escolha dentre as opções: ");
+    
+    while(1){
+        scanf("%d", &escolha);
+        getchar();
+        
+        switch(escolha){
+            case 1:
+                treinamento(atleta, contador, competicao);
+                break;
+            case 2:
+                iniciar_competicao(competidores, contador, competicao);
+                break;
+            case 3:
+                menu(competidores, contador, competicao);
+                break;
+            default:
+                printf("    Opção inválida. Tente novamente.\n");
+                printf("    Escolha dentre as opções acima: ");
+        }  
+    }
+}
+void menu_pos_competicao(){
+    int escolha = 0;
+    Competicao competicao;
+    
+    printf("    _________________________________\n");
+    printf("    |*******************************|\n");
+    printf("    |     Gerenciar Competição      |\n");
+    printf("    |*******************************|\n");
+    printf("    |    1. Treinamento             |\n");
+    printf("    |    2. Iniciar Competição      |\n");
+    printf("    |    3. Analisar Competição     |\n");
     printf("    |    4. Voltar                  |\n");
     printf("    |*******************************|\n\n");
     printf("    Escolha dentre as opções: ");
@@ -127,20 +184,20 @@ void menu_competicao(Atleta a1[], int qtd){
         
         switch(escolha){
             case 1:
-                competicao = cadastrar_competicao(atleta, contador);
+                treinamento(atleta, contador, competicao);
                 break;
             case 2:
-                treinamento(atleta, contador);
+                iniciar_competicao(competidores, contador, competicao);
                 break;
             case 3:
-                iniciar_competicao(competidores, contador);
+                menu_analisar_competicao(competidores, contador, competicao);
                 break;
             case 4:
                 menu();
                 break;
             default:
-                printf("Opção inválida. Tente novamente.\n");
-                printf("Escolha dentre as opções acima: ");
+                printf("    Opção inválida. Tente novamente.\n");
+                printf("    Escolha dentre as opções acima: ");
         }  
     }
 }
@@ -158,18 +215,21 @@ void precadastro(){
     while(1){
         if(escolha == 's'||escolha == 'S'|| escolha == 'n'||escolha == 'N'){
             if(escolha == 's'||escolha == 'S'){
-                if(qtd_cadastro > 15 && contador < 15){
-                    printf("Apenas os ultimos 15 atletas serão completados automaticamente\n");
-                    preencher_atletas(atleta, 15);
+                if(qtd_cadastro > LIMITEAUTOMATICO && contador < LIMITEAUTOMATICO){
+                    printf("Apenas" LIMITEAUTOMATICOTXT "atletas serão completados automaticamente\n");
+                    preencher_atletas(atleta, LIMITEAUTOMATICO);
                     cadastro(atleta, qtd_cadastro);
                     break;
-                } else if (contador < 15){
+                } else if (contador < LIMITEAUTOMATICO){
                     preencher_atletas(atleta, contador + qtd_cadastro);
+                    break;
+                } else if (contador >= LIMITEAUTOMATICO){
+                    printf("Apenas" LIMITEAUTOMATICOTXT "atletas serão completados automaticamente\n");
+                    cadastro(atleta, contador + qtd_cadastro);
                     break;
                 }
             } else {
-                cadastro(atleta, contador + qtd_cadastro);
-                menu();
+                cadastro(atleta, contador + qtd_cadastro);;
                 break;
             }
         } else {
@@ -230,7 +290,6 @@ void cadastro(Atleta a1[], int qtd){
     }
     contador++;
     printf("\nCadastro(s) finalizado(s)\n\n");
-    
 }
 
 void ordenar_treino(Competidor t[], int qtd){
@@ -238,8 +297,6 @@ void ordenar_treino(Competidor t[], int qtd){
     int j = 0;
     int temp = 0;
     int temp_atleta = 0;
-    //int melhores[qtd];
-    //int melhores_atletas[qtd];
     
     for (i = 0; i < qtd; i++){
         melhores[i] = INT_MAX;
@@ -266,7 +323,7 @@ void ordenar_treino(Competidor t[], int qtd){
         }
     }
 }
-void treinamento(Atleta a1[], int qtd){
+void treinamento(Atleta a1[], int qtd, Competicao competi){
     int i = 0;
     int j = 0;
     int temp = 0;
@@ -276,6 +333,8 @@ void treinamento(Atleta a1[], int qtd){
     int melhores[qtd];
     int melhores_atletas[qtd];
     
+    printf("\n      %s\n", competi.nome);
+    printf("\n      Data: %d/%d/%d\n\n", competi.data.dia, competi.data.mes, competi.data.ano);
     printf("\nFase de Treinamento:\n\n");
     for(i = 0; i < qtd; i++){
         strcpy(treino[i].atleta.nome, a1[i].nome);
@@ -286,8 +345,8 @@ void treinamento(Atleta a1[], int qtd){
         }
         
         printf("\nGostaria de digitar o tempo de algum atleta? S/N \n");
-        scanf("%c", &escolha);
         getchar();
+        scanf("%c", &escolha);
     }
     if(escolha == 'S'){
         printf("\nEscolha o atleta: ");
@@ -405,6 +464,41 @@ int validar_data(Data nascimento){
     }
     return 1;   
 }
+int validar_datacompeticao(Data competicao){
+    // variáveis
+    int maxdias[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    
+    // processamento
+    if(competicao.mes == 2 && (((competicao.ano % 4 == 0 && competicao.ano % 100 != 0)) || competicao.ano % 400 == 0)){
+        maxdias[1] = 29;    // ano bissexto
+    }
+    if(competicao.ano < 2024){
+        return 1;
+    }
+    if(competicao.mes < 1 || competicao.mes > 12){
+        return 0;
+    }
+    if (competicao.dia < 1 || competicao.dia > maxdias[competicao.mes - 1]){
+        return 0;
+    }
+    if(competicao.ano == 2024){
+        if(competicao.mes < 9){
+            return 1;
+        } else {
+            if(competicao.mes > 9){
+                return 2;
+            }
+            if(competicao.mes == 9){
+                if(competicao.dia < 4){
+                    return 1;
+                } else {
+                    return 2;
+                }
+            }
+        }
+    }
+    return 2;   
+}
 int validar_pais(char pais[]){
     int i = 0;
     char paises_aceitos[MAXPAISES][35] = {"Brasil", "EUA", "Inglaterra", "Jamaica", "Arabia Saudita", "Estados Unidos"};
@@ -429,43 +523,64 @@ int validar_pais(char pais[]){
     }
     return 0;
 }
-Competicao cadastrar_competicao(Atleta a1[], int qtd){
-    Competicao competicao;
+void cadastrar_competicao(Atleta a1[], int qtd){
     int i = 0;
     char escolha;
     
     printf("\n\nCadastrar Competição:\n\n");
     
     printf("Nome da Competição: ");
-    fgets(competicao.nome, MAXNOME, stdin);
+    fgets(competicao.nome, 60, stdin);
     competicao.nome[strlen(competicao.nome) - 1] = '\0';
     
-    printf("Data da Competição: ");
-    scanf("%d/%d/%d", &competicao.data.dia, &competicao.data.mes, &competicao.data.ano);
+    while(1){
+        printf("\nData da Competição: ");
+        scanf("%d/%d/%d", &competicao.data.dia, &competicao.data.mes, &competicao.data.ano);
     
-    printf("Os corredores da competição são: ");
+        if(validar_datacompeticao(competicao.data) == 0){
+            printf("Data não existente.\n");
+        } else if(validar_datacompeticao(competicao.data) == 1){
+            printf("Data inválida. Data passada.\n");
+        } else {
+            break;
+        }
+    }
     
-    while(escolha != 'S'){
+    printf("\nOs corredores da competição são: \n");
+    
+    while(1){
        for(i = 0; i < qtd; i++){
             printf("\nAtleta %d: %s", i + 1, a1[i].nome);
         }
         getchar();
-        printf("\nConfimar? S/N \n");
+        printf("\n\nGostaria de adicionar mais nomes? S/N \n");
         scanf("%c", &escolha);
-        
+        if(escolha == 'S'){
+            precadastro();
+        }
+        else{
+            break;
+        }
     }
     printf("\nConfimado\n");
     
-    menu_competicao(atleta, contador);
-    return competicao;
+    escolha = ' ';
+    while(1){
+        printf("\nDeseja iniciar a competição? S/N\n");
+        getchar();
+        scanf("%c", &escolha);
+        if(escolha == 'S'){
+            menu_competicao(atleta, contador);
+        } else if(escolha == 'N'){
+            menu();
+        }
+    }
 }
-void iniciar_competicao(Competidor compet[], int qtd){
+void iniciar_competicao(Competidor compet[], int qtd, Competicao competi){
     int i = 0;
     int j = 0;
     int temp = 0;
     int temp_atleta = 0;
-    int soma[MAXMELHORES];
-    int soma_atletas[MAXMELHORES];
     int maior = 0;
     int menor = 0;
     char escolha;
@@ -482,8 +597,8 @@ void iniciar_competicao(Competidor compet[], int qtd){
         printf("\nAtleta %d: %s\n", i + 1, compet[melhores_atletas[i]].atleta.nome);
     }
         printf("\nGostaria de digitar o tempo de algum atleta? S/N \n");
-        scanf("%c", &escolha);
         getchar();
+        scanf("%c", &escolha);
     printf("\n\n");
     
     if(escolha == 'S'){
@@ -556,39 +671,288 @@ void iniciar_competicao(Competidor compet[], int qtd){
             }
         }
     }
-    printf("    Classificação \n\n");
-    printf("        Pódio: \n\n");
-    printf("========================\n");
+    printf("        Classificação \n\n");
+    printf("            Pódio: \n\n");
+    printf("    ========================\n");
     i = 0;
-    printf("    *** Ouro ***\n");
-    printf("    %3s  \n", compet[soma_atletas[i]].atleta.nome);
-    printf("        %3s\n", atleta[soma_atletas[i]].pais);
-    printf("    Tempo: ");
+    printf("        *** Ouro ***\n");
+    printf("        %3s  \n", compet[soma_atletas[i]].atleta.nome);
+    printf("            %3s\n", atleta[soma_atletas[i]].pais);
+    printf("        Tempo: ");
     formatar_tempo(soma[i]);
     printf("\n\n");
     i++;
-    printf("    *** Prata ***\n");
-    printf("    %3s  \n", compet[soma_atletas[i]].atleta.nome);
-    printf("        %3s\n", atleta[soma_atletas[i]].pais);
-    printf("    Tempo: ");
+    printf("        *** Prata ***\n");
+    printf("        %3s  \n", compet[soma_atletas[i]].atleta.nome);
+    printf("            %3s\n", atleta[soma_atletas[i]].pais);
+    printf("        Tempo: ");
     formatar_tempo(soma[i]);
     printf("\n\n");
     i++;
-    printf("    *** Bronze ***\n");
-    printf("    %3s  \n", compet[soma_atletas[i]].atleta.nome);
-    printf("        %3s\n", atleta[soma_atletas[i]].pais);
-    printf("    Tempo: ");
+    printf("        *** Bronze ***\n");
+    printf("        %3s  \n", compet[soma_atletas[i]].atleta.nome);
+    printf("            %3s\n", atleta[soma_atletas[i]].pais);
+    printf("        Tempo: ");
     formatar_tempo(soma[i]);
     printf("\n\n");
     i++;
-    printf("========================\n");
+    printf("    ========================\n");
     for(i = 3; i < MAXMELHORES; i++){
-       printf(" %3s\n", compet[soma_atletas[i]].atleta.nome);
-        printf("    %3s\n", atleta[soma_atletas[i]].pais);
-        printf("    Tempo: ");
+       printf("     %3s\n", compet[soma_atletas[i]].atleta.nome);
+        printf("        %3s\n", atleta[soma_atletas[i]].pais);
+        printf("        Tempo: ");
         formatar_tempo(soma[i]);
         printf("\n\n");
     }
+    printf("    ========================\n");
+    
+    escolha = ' ';
+    while(escolha != 'S'){
+        printf("\nVoltar ao menu? S/N\n");
+        scanf("%c", &escolha);
+    }
+    menu_pos_competicao(compet, qtd, competi);
+}
+void menu_analisar_competicao(Competidor compet[], int qtd, Competicao competi){
+    int escolha = 0;
+    char sexo;
+    
+    printf("    _____________________________________________\n");
+    printf("    |*******************************************|\n");
+    printf("    |           Análise da Competição           |\n");
+    printf("    |*******************************************|\n");
+    printf("    |    1. Atletas de Cada País                |\n");   
+    printf("    |    2. Atletas por Sexo                    |\n");
+    printf("    |    3. Atletas Mais Velhos                 |\n");
+    printf("    |    4. Tempo dos Atletas na Competição     |\n");
+    printf("    |    5. Voltar                              |\n");
+    printf("    |*******************************************|\n\n");
+    printf("    Escolha dentre as opções: ");
+    
+    while(1){
+        scanf("%d", &escolha);
+        getchar();
+        
+        switch(escolha){
+            case 1:
+                agrupar_paises(competicao);
+                break;
+            case 2:
+                printf("    Atletas de qual sexo deseja classificar? F/M\n  ");
+                scanf("%c", &sexo);
+                if(sexo == 'M' || sexo == 'F'){
+                   agrupar_sexo(competicao, sexo);
+                    break; 
+                } else{
+                    printf("    Opção inválida. Tente novamente.\n");
+                    printf("    Escolha dentre as opções acima: ");
+                    continue;
+                }
+            case 3:
+                mostrar_mais_velhos(atleta);
+                break;
+            case 4:
+                analisar_competicao(compet, qtd, competi);
+                break;
+            case 5:
+                menu_pos_competicao();
+                break;
+            default:
+                printf("    Opção inválida. Tente novamente.\n");
+                printf("    Escolha dentre as opções acima: ");
+        }
+    }
+}
+void agrupar_paises(Competicao competicao){
+    int i = 0;
+    for(i = 0; i < LIMITEATLETAS; i ++){
+        competicao.corredores[i].atleta = atleta[i];
+    }
+    int controlador[5] = { 0, 0, 0, 0, 0};
+    printf("\n   Competidores agrupados por países:\n");
+    
+    for(i = 0; i < LIMITEATLETAS; i ++){
+        if(strcasecmp(competicao.corredores[i].atleta.pais, "Arabia Saudita") == 0){
+            controlador[0] ++;
+            if(controlador[0] == 1){
+                printf("   -= Arabia Saudita =-\n");
+            }
+            printf("   %s\n", competicao.corredores[i].atleta.nome);
+        }
+    }
+    for(i = 0; i < LIMITEATLETAS; i ++){
+        if(strcasecmp(competicao.corredores[i].atleta.pais, "Brasil") == 0){
+            controlador[1] ++;
+            if(controlador[1] == 1){
+                printf("\n  -= Brasil =-\n");
+            }
+            printf("   %s\n", competicao.corredores[i].atleta.nome);
+        }
+    }
+    for(i = 0; i < LIMITEATLETAS; i ++){
+        if(strcasecmp(competicao.corredores[i].atleta.pais, "EUA") == 0){
+            controlador[2] ++;
+            if(controlador[2] == 1){
+                printf("\n   -= Estados Unidos =-\n");
+            }
+            printf("   %s\n", competicao.corredores[i].atleta.nome);
+        }
+    }
+    for(i = 0; i < LIMITEATLETAS; i ++){
+        if(strcasecmp(competicao.corredores[i].atleta.pais, "Inglaterra") == 0){
+            controlador[3] ++;
+            if(controlador[3] == 1){
+                printf("\n   -= Inglaterra =-\n");
+            }
+            printf("   %s\n", competicao.corredores[i].atleta.nome);
+        }
+    }
+    for(i = 0; i < LIMITEATLETAS; i ++){
+        if(strcasecmp(competicao.corredores[i].atleta.pais, "Jamaica") == 0){
+            controlador[4] ++;
+            if(controlador[4] == 1){
+                printf("\n   -= Jamaica =-\n");
+            }
+            printf("   %s\n", competicao.corredores[i].atleta.nome);
+        }
+    }
+    char escolha;
+    while(escolha != 'S') {
+        printf("\nVoltar ao menu de análise? S/N\n");
+        scanf(" %c", &escolha); 
+    }
+    menu_analisar_competicao(competidores, contador, competicao);
+}
+void agrupar_sexo(Competicao competicao, char sexo){
+    int i = 0;
+    
+    for(i = 0; i < LIMITEATLETAS; i ++){
+        competicao.corredores[i].atleta = atleta[i];
+    }
+
+    printf("\n   -= Competidores do sexo %s =-\n", (sexo == 'F') ? "feminino" : "masculino");
+    for(i = 0; i < contador; i++) {
+        if(competicao.corredores[i].atleta.sexo == sexo) {
+            printf("   %s\n", competicao.corredores[i].atleta.nome);
+        }
+    }
+
+    char escolha = ' '; 
+    while(escolha != 'S') {
+        printf("\nVoltar ao menu de análise? S/N\n");
+        scanf(" %c", &escolha); 
+    }
+    menu_analisar_competicao(competidores, contador, competicao);
+}
+void mostrar_mais_velhos(Atleta a1[]){
+    Atleta temp;
+    int i, j, melhor;
+    
+    for (i = 0; i < contador - 1; i++) {
+        for (j = i + 1; j < contador; j++) {
+            if(a1[i].nascimento.ano > a1[j].nascimento.ano){
+                temp = a1[i];
+                a1[i] = a1[j];
+                a1[j] = temp;
+            } else {
+                if(a1[i].nascimento.ano == a1[j].nascimento.ano){
+                    if(a1[i].nascimento.mes > a1[j].nascimento.mes){
+                        temp = a1[i];
+                        a1[i] = a1[j];
+                        a1[j] = temp;
+                    } else {
+                        if(a1[i].nascimento.mes == a1[j].nascimento.mes){
+                            if(a1[i].nascimento.dia > a1[j].nascimento.dia){
+                            temp = a1[i];
+                            a1[i] = a1[j];
+                            a1[j] = temp;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    for (i = 0; i < 5; i++) {
+        printf("   Atleta %d:\n", i + 1);
+        printf("   Nome: %s\n", a1[i].nome);
+        printf("   País: %s\n", a1[i].pais);
+        printf("   Sexo: %c\n", a1[i].sexo);
+        printf("   Data de Nascimento: %02d/%02d/%04d\n", a1[i].nascimento.dia, a1[i].nascimento.mes, a1[i].nascimento.ano);
+        printf("   Melhor tempo: ");
+        for(j = 0 ; j < MAXTREINO; j ++){
+            if(treino[i].tempo[j] > treino[i].tempo[j + 1]){
+                treino[i].tempo[melhor] = treino[i].tempo[j];
+            }
+        }
+        formatar_tempo(treino[i].tempo[melhor]);
+        printf("\n\n");
+    }
+    char escolha = 'N'; 
+    while(escolha != 'S') {
+        printf("\nVoltar ao menu de análise S/N\n");
+        scanf(" %c", &escolha); 
+    }
+    menu_analisar_competicao(competidores, contador, competicao);
+}
+void analisar_competicao(Competidor compet[], int qtd, Competicao competi){
+    int i = 0;
+    int j = 0;
+    int tam_grafico[LIMITEATLETAS];
+    char escolha;
+    
+    for(i = 0; i < qtd; i++){
+        tam_grafico[i] = melhores[i];
+    }
+    printf("\n\nAnálise dos tempos na Fase de Treinamento\n\n");
+    
+    for(i = 0; i < MAXMELHORES; i++){
+        printf("\n%s\n", treino[melhores_atletas[i]].atleta.nome);
+        for(j = 0; j < tam_grafico[i] + 1; j++){
+            printf("--");
+        }
+        printf("\n");
+        for(j = 0; j < tam_grafico[i]; j++){
+            printf("  ");
+        }
+        printf("  |");
+        formatar_tempo(tam_grafico[i]);
+        printf("\n");
+        for(j = 0; j < tam_grafico[i] + 1; j++){
+            printf("--");
+        }
+        printf("\n");
+    }
+    
+    printf("\n\nAnálise dos tempos na Fase de Competição\n\n");
+    
+    for(i = 0; i < qtd; i++){
+        tam_grafico[i] = soma[i];
+    }
+    
+    for(i = 0; i < MAXMELHORES; i++){
+        printf("\n%s\n", treino[soma_atletas[i]].atleta.nome);
+        for(j = 0; j < tam_grafico[i] / 5; j++){
+            printf("--");
+        }
+        printf("\n");
+        for(j = 0; j < tam_grafico[i] / 5; j++){
+            printf("  ");
+        }
+        printf("|");
+        formatar_tempo(tam_grafico[i]);
+        printf("\n");
+        for(j = 0; j < tam_grafico[i] / 5; j++){
+            printf("--");
+        }
+        printf("\n");
+    }
+    
+    while(escolha != 'S'){
+        printf("\nVoltar ao menu de análise? S/N\n");
+        scanf("%c", &escolha);
+    }
+    menu_analisar_competicao(competidores, contador, competicao);
     
 }
 void formatar_tempo(int tempo){
@@ -602,17 +966,17 @@ void formatar_tempo(int tempo){
 }
 void preencher_atletas(Atleta atleta[], int qtd_cadastro){
     // variaveis
-    char auto_nomes[15][MAXNOME] = {"Ana dos Santos", "John New", "Helena Silveira", "Esther J. Sechrist", "Keith V. Prentiss", 
+    char auto_nomes[][MAXNOME] = {"Ana dos Santos", "John New", "Helena Silveira", "Esther J. Sechrist", "Keith V. Prentiss", 
                                     "John S. McKinnon","Alisha Marsh", "Callum Hall", "Niamh Archer", "Abdul Baasid al-Sadri",
                                     "Kaatima el-Nasser","Sharonda Powell", "João Silva", "Usain Bolt", "Haibaa el-Fayad"};
                                     
-    char auto_pais[15][20] = {"Brasil","EUA","Brasil","EUA","EUA","EUA","Inglaterra","Inglaterra","Inglaterra",
-                              "Arabia Saudita","Arabia Saudita","Jamaica","Brasil","Jamaica","Arabia Sauditat"};
+    char auto_pais[][20] = {"Brasil","EUA","Brasil","EUA","EUA","EUA","Inglaterra","Inglaterra","Inglaterra",
+                              "Arabia Saudita","Arabia Saudita","Jamaica","Brasil","Jamaica","Arabia Saudita"};
                                      
-    char auto_sexo[15] = { 'F', 'M', 'F', 'F', 'F', 'M', 'M', 'M', 'F', 'M', 'F', 'F', 'M', 'M', 'F'};
-    int autonascimento_dia[15] = { 21, 15, 10, 2, 21, 16, 21, 8, 1, 17, 25, 8, 2, 1, 3 };
-    int autonascimento_mes[15] = { 12, 2, 2, 7, 12, 12, 2, 4, 1, 3, 8, 8, 1, 10, 6 };
-    int autonascimento_ano[15] = { 1979, 1959, 1979, 1970, 1974, 1967, 1962, 1957, 1979, 1969, 1970, 1978, 1979, 1963, 1965 };
+    char auto_sexo[] = { 'F', 'M', 'F', 'F', 'F', 'M', 'M', 'M', 'F', 'M', 'F', 'F', 'M', 'M', 'F'};
+    int autonascimento_dia[] = { 21, 15, 10, 2, 21, 16, 21, 8, 1, 17, 25, 8, 2, 1, 3 };
+    int autonascimento_mes[] = { 12, 2, 2, 7, 12, 12, 2, 4, 1, 3, 8, 8, 1, 10, 6 };
+    int autonascimento_ano[] = { 1979, 1959, 1979, 1970, 1974, 1967, 1962, 1957, 1979, 1969, 1970, 1978, 1979, 1963, 1965 };
     
     // processamento
     for(int i = contador; i < qtd_cadastro; i++){
