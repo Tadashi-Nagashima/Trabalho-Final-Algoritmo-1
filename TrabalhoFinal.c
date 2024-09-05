@@ -17,8 +17,8 @@ A estrutura de dados será baseada em registros (structs) e vetores/matrizes.
 #define MAXTREINO 7
 #define MAXMELHORES 8
 #define LIMITEATLETAS 100
-#define LIMITEAUTOMATICO 15
-#define LIMITEAUTOMATICOTXT "15"
+#define LIMITEAUTOMATICO 100
+#define LIMITEAUTOMATICOTXT "100"
 
 typedef struct data{
     int dia;
@@ -39,7 +39,7 @@ typedef struct competidor{
 } Competidor;
 
 typedef struct competicao{
-    char nome[60];
+    char nome[80];
     Data data;
     Competidor corredores[MAXMELHORES];
 } Competicao;
@@ -204,7 +204,11 @@ void menu_pos_competicao(){
 void precadastro(){
     int qtd_cadastro = 0;
     char escolha;
-
+    
+    if(contador == 100){
+        printf("\nNúmero máximo de atletas atingido.\n");
+        menu(); 
+    }
     printf("\nDigite quantos cadastros gostaria de fazer: ");
     scanf("%d", &qtd_cadastro);
     getchar();
@@ -216,7 +220,7 @@ void precadastro(){
         if(escolha == 's'||escolha == 'S'|| escolha == 'n'||escolha == 'N'){
             if(escolha == 's'||escolha == 'S'){
                 if(qtd_cadastro > LIMITEAUTOMATICO && contador < LIMITEAUTOMATICO){
-                    printf("Apenas" LIMITEAUTOMATICOTXT "atletas serão completados automaticamente\n");
+                    printf("Apenas " LIMITEAUTOMATICOTXT " atletas serão completados automaticamente\n");
                     preencher_atletas(atleta, LIMITEAUTOMATICO);
                     cadastro(atleta, qtd_cadastro);
                     break;
@@ -224,7 +228,7 @@ void precadastro(){
                     preencher_atletas(atleta, contador + qtd_cadastro);
                     break;
                 } else if (contador >= LIMITEAUTOMATICO){
-                    printf("Apenas" LIMITEAUTOMATICOTXT "atletas serão completados automaticamente\n");
+                    printf("Apenas " LIMITEAUTOMATICOTXT " atletas serão completados automaticamente\n");
                     cadastro(atleta, contador + qtd_cadastro);
                     break;
                 }
@@ -345,8 +349,8 @@ void treinamento(Atleta a1[], int qtd, Competicao competi){
         }
         
         printf("\nGostaria de digitar o tempo de algum atleta? S/N \n");
-        getchar();
         scanf("%c", &escolha);
+        getchar();
     }
     if(escolha == 'S'){
         printf("\nEscolha o atleta: ");
@@ -372,7 +376,7 @@ void treinamento(Atleta a1[], int qtd, Competicao competi){
         }
         printf("\nAtleta %d: %s\n", i + 1, treino[i].atleta.nome);
         for(j = 0; j < MAXTREINO; j++){
-            treino[i].tempo[j] = rand() % 101;
+            treino[i].tempo[j] = 10 + rand() % (101 - 10 + 1);
             printf("|");
             formatar_tempo(treino[i].tempo[j]);
         }
@@ -412,8 +416,9 @@ void treinamento(Atleta a1[], int qtd, Competicao competi){
     }
     
     escolha = ' ';
-    while(escolha != 'S'){
+    while(escolha == ' '){
         printf("\nVoltar ao menu? S/N\n");
+        getchar();
         scanf("%c", &escolha);
         
     }
@@ -530,7 +535,7 @@ void cadastrar_competicao(Atleta a1[], int qtd){
     printf("\n\nCadastrar Competição:\n\n");
     
     printf("Nome da Competição: ");
-    fgets(competicao.nome, 60, stdin);
+    fgets(competicao.nome, 80, stdin);
     competicao.nome[strlen(competicao.nome) - 1] = '\0';
     
     while(1){
@@ -552,8 +557,8 @@ void cadastrar_competicao(Atleta a1[], int qtd){
        for(i = 0; i < qtd; i++){
             printf("\nAtleta %d: %s", i + 1, a1[i].nome);
         }
-        getchar();
         printf("\n\nGostaria de adicionar mais nomes? S/N \n");
+        getchar();
         scanf("%c", &escolha);
         if(escolha == 'S'){
             precadastro();
@@ -597,12 +602,12 @@ void iniciar_competicao(Competidor compet[], int qtd, Competicao competi){
         printf("\nAtleta %d: %s\n", i + 1, compet[melhores_atletas[i]].atleta.nome);
     }
         printf("\nGostaria de digitar o tempo de algum atleta? S/N \n");
-        getchar();
         scanf("%c", &escolha);
     printf("\n\n");
     
     if(escolha == 'S'){
         printf("Escolha o atleta: ");
+        getchar();
         scanf("%d", &escolha_atleta);
         escolha_atleta--;
         printf("%s\n", compet[melhores_atletas[escolha_atleta]].atleta.nome);
@@ -638,7 +643,7 @@ void iniciar_competicao(Competidor compet[], int qtd, Competicao competi){
         }
         printf("\nAtleta %d: %s\n", i + 1, compet[melhores_atletas[i]].atleta.nome);
         for(j = 0; j < 5; j++){
-            compet[melhores_atletas[i]].tempo[j] = rand() % 101;
+            compet[melhores_atletas[i]].tempo[j] = 10 + rand() % (101 - 10 + 1);
             printf("| %ds ", compet[melhores_atletas[i]].tempo[j]);
             if (maior < compet[melhores_atletas[i]].tempo[j]){
                 maior = compet[melhores_atletas[i]].tempo[j];
@@ -709,6 +714,7 @@ void iniciar_competicao(Competidor compet[], int qtd, Competicao competi){
     escolha = ' ';
     while(escolha != 'S'){
         printf("\nVoltar ao menu? S/N\n");
+        getchar();
         scanf("%c", &escolha);
     }
     menu_pos_competicao(compet, qtd, competi);
@@ -966,17 +972,46 @@ void formatar_tempo(int tempo){
 }
 void preencher_atletas(Atleta atleta[], int qtd_cadastro){
     // variaveis
-    char auto_nomes[][MAXNOME] = {"Ana dos Santos", "John New", "Helena Silveira", "Esther J. Sechrist", "Keith V. Prentiss", 
-                                    "John S. McKinnon","Alisha Marsh", "Callum Hall", "Niamh Archer", "Abdul Baasid al-Sadri",
-                                    "Kaatima el-Nasser","Sharonda Powell", "João Silva", "Usain Bolt", "Haibaa el-Fayad"};
+    char auto_nomes[][MAXNOME] = {"Ana dos Santos",  "John New",  "Helena Silveira",  "Esther J. Sechrist",  "Keith V. Prentiss", 
+                                    "John S. McKinnon", "Alisha Marsh",  "Callum Hall", "Niamh Archer", "Abdul Baasid al-Sadri",
+                                    "Kaatima el-Nasser", "Sharonda Powell", "João Silva", "Usain Bolt", "Haibaa el-Fayad", 
+                                    "Antonio Siqueira", "Inês Leite", "Ethridge Stevens", "Abryann Hopkins", "David Orde", 
+                                    "Shantaya Martin", "Faaid al-Bashara", "Tahiyya al-Eid", "Antônio Braga", "Daiana Yamada", 
+                                    "Kione Ramsey", "Jordina Wilson", "Kordell Tiffin", "Brooke Doesebexonce", "Hazm el-Baccus", 
+                                    "Rifqa al-Hamid",  "Saulo Santos", "Elaine Assis", "Ericson Butler", "Quanshay Williamson", 
+                                    "Noah Alvarenga", "Shalesia Elough", "Shakeel al-Qasim", "Hawraa al-Zaher", "Joaquim Araújo", 
+                                    "Áurea Rezende", "Keenan Beasley", "Torielle Green", "Clement Doesebexonce", "Lashaunta Minot", 
+                                    "Jihaad el-Rashed", "Lubaaba el-Sabir", "Antonio Aguiar", "Fernanda Duarte", "Késhaun Mills", 
+                                    "Jemisha Harrison", "Jay Tyrell", "Alicia Pierce", "Ghaamid el-Tariq", "Haaniya al-Faraj", "Mateus Espíndola", 
+                                    "Edna Henriques", "Maynard Wilson", "Allacia Sanders", "Kimbel Timberlake", "Dominique Pasco", 
+                                    "Saood al-Jafari", "Mawzoona el-Wahba", "Cauê Belluci", "Amanda Fontana", "Qasim Rucker", 
+                                    "Leisley Griffin", "Talin Chaplain", "Shandee Montgomery", "Taalib al-Yousif", "Haazima al-Salik", 
+                                    "Mário Carmo", "Sílvia Alves", "Debony Ford", "Destini Mcdaniel", "Tremaine Stanbury", "Alisha Richie", 
+                                    "Abdul Noor al-Nasrallah", "Lateefa el-Khan", "Alceu Dutra", "Mariana Figueiredo", "Jamaad Douglas", 
+                                    "Ricca Hines", "Daevin McGhie", "Tandi Rayner", "Humaidaan el-Nasir", "Najaat al-Salim", "Heitor Siqueira", "Marilsa Quintana", 
+                                    "Anderius Harrell", "Teagen Washington", "Clement Hayes", 
+                                    "Latoya Battersby", "Jameel el-Asad", "Shameema el-Selim", "Algar Charlie", "Editha Elwell", "Earle Beecham", "Bonnie Barrick", 
+                                    "Wilfrid Dale", 	"Mercia Brow", "Page Daggett", "Clover Earnest", "Edwyn Dutt", 	"Odelina Hedge", "Wylie Boggess", "Gwen Baggs", 
+                                    "Kenway Chesser"};
                                     
-    char auto_pais[][20] = {"Brasil","EUA","Brasil","EUA","EUA","EUA","Inglaterra","Inglaterra","Inglaterra",
-                              "Arabia Saudita","Arabia Saudita","Jamaica","Brasil","Jamaica","Arabia Saudita"};
-                                     
-    char auto_sexo[] = { 'F', 'M', 'F', 'F', 'F', 'M', 'M', 'M', 'F', 'M', 'F', 'F', 'M', 'M', 'F'};
-    int autonascimento_dia[] = { 21, 15, 10, 2, 21, 16, 21, 8, 1, 17, 25, 8, 2, 1, 3 };
-    int autonascimento_mes[] = { 12, 2, 2, 7, 12, 12, 2, 4, 1, 3, 8, 8, 1, 10, 6 };
-    int autonascimento_ano[] = { 1979, 1959, 1979, 1970, 1974, 1967, 1962, 1957, 1979, 1969, 1970, 1978, 1979, 1963, 1965 };
+    char auto_pais[][35] = {"Brasil","EUA","Brasil","EUA","EUA","EUA","Inglaterra","Inglaterra","Inglaterra",
+                            "Arabia Saudita", "Arabia Saudita", "Jamaica", "Brasil", "Jamaica", "Arabia Saudita", "Brasil",  "Brasil", 
+                            "EUA", "EUA", "Jamaica",  "Jamaica", "Arabia Saudita", "Arabia Saudita", "Brasil", "Brasil", "EUA", "EUA",  "Jamaica", "Jamaica", "Arabia Saudita", "Arabia Saudita", 
+                            "Brasil","Brasil", "EUA", "EUA",  "Jamaica", "Jamaica", "Arabia Saudita", "Arabia Saudita", 
+                            "Brasil", "Brasil", "EUA", "EUA", "Jamaica", "Jamaica", "Arabia Saudita", "Arabia Saudita", 
+                            "Brasil", "Brasil", "EUA", "EUA",  "Jamaica", "Jamaica", "Arabia Saudita", "Arabia Saudita", 
+                            "Brasil", "Brasil", "EUA", "EUA", "Jamaica", "Jamaica", "Arabia Saudita","Arabia Saudita", 
+                            "Brasil", "Brasil", "EUA", "EUA",  "Jamaica","Jamaica", "Arabia Saudita", "Arabia Saudita", 
+                            "Brasil", "Brasil", "EUA", "EUA",  "Jamaica", "Jamaica", "Arabia Saudita", "Arabia Saudita", 
+                            "Brasil", "Brasil", "EUA", "EUA",  "Jamaica", "Jamaica", "Arabia Saudita", "Arabia Saudita", 
+                            "Inglaterra", "Inglaterra", "Inglaterra", "Inglaterra", "Inglaterra", "Inglaterra",  "Inglaterra", 
+                            "Inglaterra", "Inglaterra", "Inglaterra", "Inglaterra", "Inglaterra"};
+
+    char auto_sexo[] = {'F', 'M', 'F', 'F', 'F', 'M', 'M', 'M', 'F', 'M', 'F', 'F', 'M', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F',  'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M', 'F', 'M'};
+
+    int autonascimento_dia[] = { 21, 15, 10, 2, 21, 16, 21, 8, 1, 17, 25, 8, 2, 1, 3, 14, 17, 28, 26, 24, 26, 17, 13, 10, 2, 3, 8, 21, 20, 24, 17, 1, 7, 23, 17, 12, 9, 28, 10, 3, 21, 3, 14, 8, 26, 30, 13, 13, 19, 30, 28, 14, 17, 2, 23, 10, 4, 22, 30, 15, 8, 9, 15, 6, 1, 24, 17, 2, 21, 27, 4, 3, 21, 17, 2, 16, 16, 15, 28, 27, 6, 17, 10, 14, 18, 25, 16, 13, 16, 15, 28, 15, 15, 4, 21, 8, 19, 7, 9, 9 };
+    int autonascimento_mes[] = { 12, 2, 2, 7, 12, 12, 2, 4, 1, 3, 8, 8, 1, 10, 6, 14, 17, 28, 26, 24, 26, 17, 13, 10, 2, 3, 8, 21, 20, 24, 17, 1, 7, 23, 17, 12, 9, 28, 10, 3, 21, 3, 14, 8, 26, 30, 13, 13, 19, 30, 28, 14, 17, 2, 23, 10, 4, 22, 30, 15, 8, 9, 15, 6, 1, 24, 17, 2, 21, 27, 4, 3, 21, 17, 2, 16, 16, 15, 28, 27, 6, 17, 10, 14, 18, 25, 16, 13, 16, 15, 28, 15, 15, 4, 21, 8, 19, 7, 9, 9};
+    int autonascimento_ano[] = { 1979, 1959, 1979, 1970, 1974, 1967, 1962, 1957, 1979, 1969, 1970, 1978, 1979, 1963, 1965, 1915, 1924, 1965, 1945, 1955, 1903, 1966, 1944, 1929, 1909, 1904, 1957, 1928, 1945, 1979, 1942, 1950, 1938, 1912, 1978, 1961, 1910, 1905, 1905, 1970, 1946, 1904, 1957, 1951, 1945, 1937, 1914, 1968, 1950, 1907, 1971, 1951, 1972, 1963, 1978, 1929, 1965, 1905, 1955, 1958, 1933, 1946, 1928, 1919, 1956, 1955, 1978, 1915, 1958, 1904, 1905, 1952, 1934, 1960, 1951, 1977, 1917, 1964, 1965, 1916, 1919, 1906, 1965, 1939, 1967, 1914, 1917, 1902, 1917, 1970, 1959, 1976, 1964, 1935, 1916, 1969, 1938, 1914, 1904, 1916};
     
     // processamento
     for(int i = contador; i < qtd_cadastro; i++){
