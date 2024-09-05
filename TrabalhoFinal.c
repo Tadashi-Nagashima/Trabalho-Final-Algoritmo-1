@@ -237,7 +237,8 @@ void precadastro(){
                 break;
             }
         } else {
-            printf("Informação inválida. Tente novamente.");
+            printf("Informação inválida. Tente novamente.\n\n");
+            break;
         }
     }
     menu();
