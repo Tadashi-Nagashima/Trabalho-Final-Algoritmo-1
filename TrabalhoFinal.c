@@ -2,9 +2,7 @@
 Nomes..: Luiz Felipe Costa Camargo (RA 2677865) e Tadashi Bello Nagashima (RA 2677873)
 Turma..: EC41A - Algoritmos 1 - C11
 Data..: 05/09/2024
-Trabalho Final Grupo 9..: Desenvolver um programa em Linguagem C (ANSI C) para gerenciar e analisar dados relacionados ao Circuito Mundial de Corrida de Carrinho de Rolemã Senior. 
-O sistema deve organizar e validar informações sobre atletas, treinamento/classificação, competições e resultados finais das provas.
-A estrutura de dados será baseada em registros (structs) e vetores/matrizes.
+Trabalho Final Grupo 9..: Sistema Gerenciador de Corridas.
 */
 
 #include <stdio.h>
