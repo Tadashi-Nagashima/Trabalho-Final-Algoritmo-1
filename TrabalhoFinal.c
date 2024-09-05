@@ -1,8 +1,8 @@
 /*
-Nomes: Luiz Felipe Costa Camargo e Tadashi Bello Nagashima
-Turma: EC41A - Algoritmos 1 - C11
-Data: 05/09/2024
-Enunciado: Desenvolver um programa em Linguagem C (ANSI C) para gerenciar e analisar dados relacionados ao Circuito Mundial de Corrida de Carrinho de Rolemã Senior. 
+Nomes..: Luiz Felipe Costa Camargo (RA 2677865) e Tadashi Bello Nagashima (RA 2677873)
+Turma..: EC41A - Algoritmos 1 - C11
+Data..: 05/09/2024
+Trabalho Final Grupo 9..: Desenvolver um programa em Linguagem C (ANSI C) para gerenciar e analisar dados relacionados ao Circuito Mundial de Corrida de Carrinho de Rolemã Senior. 
 O sistema deve organizar e validar informações sobre atletas, treinamento/classificação, competições e resultados finais das provas.
 A estrutura de dados será baseada em registros (structs) e vetores/matrizes.
 */
@@ -744,7 +744,7 @@ void menu_analisar_competicao(Competidor compet[], int qtd, Competicao competi){
                 agrupar_paises(competicao);
                 break;
             case 2:
-                printf("    Atletas de qual sexo deseja classificar? F/M\n  ");
+                printf("\nAtletas de qual sexo deseja classificar? F/M\n");
                 scanf("%c", &sexo);
                 if(sexo == 'M' || sexo == 'F'){
                    agrupar_sexo(competicao, sexo);
