@@ -5,6 +5,7 @@ Data..: 05/09/2024
 Trabalho Final Grupo 9..: Sistema Gerenciador de Corridas.
 */
 
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -743,16 +744,15 @@ void menu_analisar_competicao(Competidor compet[], int qtd, Competicao competi){
                 agrupar_paises(competicao);
                 break;
             case 2:
-                printf("\nAtletas de qual sexo deseja classificar? F/M\n");
-                scanf("%c", &sexo);
-                if(sexo == 'M' || sexo == 'F'){
-                   agrupar_sexo(competicao, sexo);
-                    break; 
-                } else{
-                    printf("    Opção inválida. Tente novamente.\n");
-                    printf("    Escolha dentre as opções acima: ");
-                    continue;
-                }
+                do{
+                    printf("Digite o sexo: ");
+                    scanf("%c", &sexo);
+                    getchar(); 
+            
+                    if(validar_sexo(sexo) == 0){
+                        printf("Informação inválida. Tente novamente.\n\n"); 
+                    }   
+                }while(validar_sexo(sexo) != 1);
             case 3:
                 mostrar_mais_velhos(atleta);
                 break;
