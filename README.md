@@ -1,4 +1,4 @@
-# Trabalho-Final-Algoritmo-1
+## Trabalho-Final-Algoritmo-1
 
 https://docs.google.com/document/d/1MGOmBgcquh6Ak_5VRYc2E7SOOky6H2iv/edit
 
@@ -6,12 +6,12 @@ PROJETO FINAL (Gerenciador de Corridas)
 
 Projeto: Desenvolver um programa em Linguagem C (ANSI C) para gerenciar e analisar dados relacionados ao Circuito Mundial de Corrida de Carrinho de Rolemã Senior. O sistema deve organizar e validar informações sobre atletas, treinamento/classificação, competições e resultados finais das provas. A estrutura de dados será baseada em registros (structs) e vetores/matrizes.
 
-# Data (struct)
+## Data (struct)
 dia (int) 	// Ex: 10
 mes (int)	// Ex: 08
 ano (int)	// Ex: 2000
      
- # Atleta (struct)
+## Atleta (struct)
 nome (string[50])    	// Ex: Usain Bolt
 pais (string[35])		// Ex: Jamaica
 sexo (char);		// Ex: 'M' para masculino ou 'F' para feminino
@@ -21,7 +21,7 @@ nascimento (Data)
 atleta (Atleta)
 tempo (int[7]) 
 
-# Competicao (struct)
+## Competicao (struct)
 nome (string[50])    		// Ex: Circuito Mundial de Corrida de Carrinho de Rolemã Senior.
 data (Data)
 corredores (Competidor[8])
